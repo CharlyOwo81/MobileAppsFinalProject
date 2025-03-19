@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp">
+
+    <TextView
+        android:id="@+id/Materia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre de la Materia"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Calificación de la materia -->
+    <TextView
+        android:id="@+id/Calificacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calificación: 0"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/btnDesplegar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/arrow_down_float"
+        android:contentDescription="Desplegar detalles"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/layoutDetalles"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp">
+
+        <EditText
+            android:id="@+id/Motivo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Motivo de la reprobación"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+        <EditText
+            android:id="@+id/Accion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Acción para aprobar"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

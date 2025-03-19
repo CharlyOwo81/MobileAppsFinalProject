@@ -4,40 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
+    android:layout_height="match_parent"
+    tools:context=".Excel">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inicio de Sesión"
-        android:textSize="60dp"
+        android:text="Cargar Archivo Excel"
+        android:textSize="40sp"
         android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:id="@+id/usuario"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Usuario"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:id="@+id/contra"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
         android:layout_gravity="center_horizontal" />
 
     <Button
-        android:id="@+id/btnInicio"
+        android:id="@+id/btnSeleccionar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
-        />
+        android:text="Seleccionar Archivo"
+        android:layout_gravity="center_vertical"/>
+
+    <Button
+        android:id="@+id/btnSubir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subir Archivo"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>
-

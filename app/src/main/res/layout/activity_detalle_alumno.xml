@@ -6,38 +6,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".DetalleAlumno">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inicio de Sesión"
-        android:textSize="60dp"
+        android:text="Detalle del Estudiante"
+        android:textSize="40sp"
         android:textStyle="bold"
-        android:textAlignment="center"
         android:layout_gravity="center_horizontal" />
 
-    <EditText
-        android:id="@+id/usuario"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/txtNombreEstudiante"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Usuario"
-        android:layout_gravity="center_horizontal" />
+        android:text="Nombre del Estudiante"
+        android:textSize="20sp"
+        android:layout_gravity="center" />
 
-    <EditText
-        android:id="@+id/contra"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/Semestre"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:layout_gravity="center_horizontal" />
+        android:text="Semestre "
+        android:textSize="20sp"
+        android:layout_gravity="center" />
 
-    <Button
-        android:id="@+id/btnInicio"
+    <LinearLayout
+        android:id="@+id/listaMaterias"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
-        />
+        android:orientation="vertical"/>
+
 
 </LinearLayout>
-

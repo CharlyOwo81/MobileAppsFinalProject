@@ -6,38 +6,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-
+    tools:context=".ListaAlumnos">
     <TextView
+        android:id="@+id/Alumnos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inicio de Sesión"
-        android:textSize="60dp"
+        android:text="Lista de Alumnos"
+        android:textSize="40sp"
         android:textStyle="bold"
-        android:textAlignment="center"
         android:layout_gravity="center_horizontal" />
 
-    <EditText
-        android:id="@+id/usuario"
+    <ListView
+        android:id="@+id/listaAlumnos"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Usuario"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:id="@+id/contra"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Contraseña"
-        android:inputType="textPassword"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/btnInicio"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
+        android:layout_height="590dp"
         />
 
+    <Button
+        android:id="@+id/btnAgregar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Agregar Tutorado"
+        android:layout_marginTop="16dp" />
 </LinearLayout>
-
