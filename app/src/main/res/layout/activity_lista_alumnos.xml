@@ -6,26 +6,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/striped_background"
+    android:padding="20dp"
     tools:context=".ListaAlumnos">
-    <TextView
-        android:id="@+id/Alumnos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lista de Alumnos"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal" />
 
+    <!-- Cabecera -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/header_background"
+        android:padding="16dp"
+        android:layout_marginBottom="30dp"
+        android:elevation="6dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/diversity_3_24px"
+            android:tint="#FFFFFF"
+            android:contentDescription="Students Icon"/>
+
+        <TextView
+            android:id="@+id/Alumnos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lista de Alumnos"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="12dp"
+            android:shadowColor="#40000000"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="4"/>
+    </LinearLayout>
+
+    <!-- ListView con estilo -->
     <ListView
         android:id="@+id/listaAlumnos"
         android:layout_width="match_parent"
-        android:layout_height="590dp"
-        />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/listview_background"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:elevation="4dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"/>
 
+    <!-- Botón -->
     <Button
         android:id="@+id/btnAgregar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Agregar Tutorado"
-        android:layout_marginTop="16dp" />
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:background="@drawable/button_background"
+        android:textColor="#FFFFFF"
+        android:drawableStart="@drawable/add_24px"
+        android:drawableTint="#FFFFFF"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="6dp"/>
+
 </LinearLayout>

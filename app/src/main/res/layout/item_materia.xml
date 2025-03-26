@@ -3,16 +3,42 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@drawable/materia_card_background"
     android:padding="16dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="12dp"
+    android:elevation="4dp">
 
-    <TextView
-        android:id="@+id/Materia"
-        android:layout_width="wrap_content"
+    <!-- Nombre de la Materia -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre de la Materia"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/Materia"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nombre de la Materia"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#640D5F"
+            android:shadowColor="#40000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"/>
+
+        <ImageButton
+            android:id="@+id/btnDesplegar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_arrow_down"
+            android:background="@null"
+            android:tint="#D91656"
+            android:contentDescription="Desplegar detalles"
+            android:visibility="visible"/>
+    </LinearLayout>
 
     <!-- Calificación de la materia -->
     <TextView
@@ -20,40 +46,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Calificación: 0"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="#EE66A6"
+        android:layout_marginTop="4dp"/>
 
-    <ImageButton
-        android:id="@+id/btnDesplegar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/arrow_down_float"
-        android:contentDescription="Desplegar detalles"
-        android:visibility="gone" />
-
+    <!-- Detalles desplegables -->
     <LinearLayout
         android:id="@+id/layoutDetalles"
-        android:orientation="vertical"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp">
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="12dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
 
         <EditText
             android:id="@+id/Motivo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Motivo de la reprobación"
+            android:background="@drawable/detail_edittext_background"
+            android:padding="12dp"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"/>
+            android:textColor="#640D5F"
+            android:textColorHint="#EE66A6"
+            android:layout_marginBottom="12dp"
+            android:visibility="visible"/>
 
         <EditText
             android:id="@+id/Accion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Acción para aprobar"
+            android:background="@drawable/detail_edittext_background"
+            android:padding="12dp"
             android:textSize="14sp"
-            android:visibility="gone" />
+            android:textColor="#640D5F"
+            android:textColorHint="#EE66A6"
+            android:visibility="visible"/>
     </LinearLayout>
 
 </LinearLayout>
