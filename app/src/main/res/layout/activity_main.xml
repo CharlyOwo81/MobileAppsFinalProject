@@ -26,14 +26,14 @@ android:clipToPadding="false">
     android:layout_width="52dp"
     android:layout_height="52dp"
     android:src="@drawable/category_24px"
-    android:tint="#FFCA28"
-android:contentDescription="App Logo"
-android:scaleType="centerInside"/>
+    android:contentDescription="App Logo"
+    android:scaleType="centerInside"
+    app:tint="#FFCA28" />
 
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Mi App"
+    android:text="Mentory"
     android:textSize="34sp"
     android:textStyle="bold"
     android:textColor="@color/white"

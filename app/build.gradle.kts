@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "mx.edu.itson.myapplication"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -36,9 +36,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.poi)
-    implementation (libs.poi.ooxml)
-    implementation (libs.commons.compress)
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

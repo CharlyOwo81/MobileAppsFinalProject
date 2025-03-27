@@ -24,8 +24,8 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:src="@drawable/diversity_3_24px"
-            android:tint="@color/white"
-            android:contentDescription="Students Icon"/>
+            android:contentDescription="Students Icon"
+            app:tint="@color/white" />
 
         <TextView
             android:id="@+id/Alumnos"
@@ -54,7 +54,9 @@
         android:clipToPadding="false"
         android:elevation="6dp"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"/>
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+
+        />
 
     <Button
         android:id="@+id/btnAgregar"
