@@ -6,26 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/striped_background"
+    android:background="#F9E8D9"
     android:padding="20dp"
     tools:context=".ListaAlumnos">
 
-    <!-- Cabecera -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
         android:background="@drawable/header_background"
-        android:padding="16dp"
-        android:layout_marginBottom="30dp"
-        android:elevation="6dp">
+        android:padding="18dp"
+        android:layout_marginBottom="36dp"
+        android:elevation="8dp">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:src="@drawable/diversity_3_24px"
-            android:tint="#FFFFFF"
+            android:tint="@color/white"
             android:contentDescription="Students Icon"/>
 
         <TextView
@@ -33,17 +32,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lista de Alumnos"
-            android:textSize="28sp"
+            android:textSize="30sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginStart="12dp"
-            android:shadowColor="#40000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="4"/>
+            android:textColor="@color/white"
+            android:layout_marginStart="14dp"
+            android:shadowColor="#4D2A3447"
+            android:shadowDx="3"
+            android:shadowDy="3"
+            android:shadowRadius="6"/>
     </LinearLayout>
 
-    <!-- ListView con estilo -->
     <ListView
         android:id="@+id/listaAlumnos"
         android:layout_width="match_parent"
@@ -52,27 +50,46 @@
         android:background="@drawable/listview_background"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:padding="8dp"
+        android:padding="10dp"
         android:clipToPadding="false"
-        android:elevation="4dp"
+        android:elevation="6dp"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb"/>
 
-    <!-- Botón -->
     <Button
         android:id="@+id/btnAgregar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:text="Agregar Tutorado"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textAllCaps="false"
         android:background="@drawable/button_background"
         android:textColor="#FFFFFF"
         android:drawableStart="@drawable/add_24px"
-        android:drawableTint="#FFFFFF"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:layout_marginTop="20dp"
-        android:elevation="6dp"/>
+        android:drawableTint="#FFCA28"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:elevation="8dp"
+        style="@style/Widget.AppCompat.Button"
+        app:backgroundTint="@null" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Cerrar Sesión"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:background="@drawable/logout_button_background"
+        android:textColor="#FFFFFF"
+        android:drawableStart="@drawable/login_24px"
+        android:drawableTint="#FFD700"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:elevation="8dp"
+        style="@style/Widget.AppCompat.Button"
+        app:backgroundTint="@null" />
 
 </LinearLayout>

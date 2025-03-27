@@ -25,6 +25,7 @@ class ListaAlumnos : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_lista_alumnos)
         var boton:Button = findViewById(R.id.btnAgregar)
+        var logout:Button = findViewById(R.id.btnLogout)
 
         listaAlumnos= findViewById(R.id.listaAlumnos)
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, alumnos.map { "${it.nombre} - ${it.semestre}" })
@@ -39,6 +40,12 @@ class ListaAlumnos : AppCompatActivity() {
         boton.setOnClickListener {
             mostrarDialogoAgregarAlumno()
         }
+
+        logout.setOnClickListener {
+            var intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
