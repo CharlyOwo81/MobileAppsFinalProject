@@ -1,5 +1,8 @@
 package mx.edu.itson.myapplication
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,13 +12,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.apache.poi.ss.usermodel.WorkbookFactory
+import java.io.InputStream
 
 class DetalleAlumno : AppCompatActivity() {
      lateinit var listaMaterias: LinearLayout
-     val materias = listOf(
+     val materias = mutableListOf(
         Materia("Matemáticas", 65, "No estudió lo suficiente", "Asistir a tutorías"),
         Materia("Física", 80),
         Materia("Historia", 55, "No entregó tareas", "Cumplir con tareas y estudiar"),
@@ -35,6 +41,8 @@ class DetalleAlumno : AppCompatActivity() {
 
         nombre.text = nombreEstudiante
         semestre.text = semestreEstudiante
+        val btnImportar: Button = findViewById(R.id.btnImportarExcel)
+        btnImportar.setOnClickListener { seleccionarArchivoExcel() }
 
         mostrarMaterias()
 
@@ -44,6 +52,42 @@ class DetalleAlumno : AppCompatActivity() {
             insets
         }
     }
+
+    private val seleccionarArchivo =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri -> procesarArchivoExcel(uri) }
+            }
+        }
+
+    private fun seleccionarArchivoExcel() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        seleccionarArchivo.launch(intent)
+    }
+
+    private fun procesarArchivoExcel(uri: Uri) {
+        try {
+            val inputStream: InputStream? = contentResolver.openInputStream(uri)
+            val workbook = WorkbookFactory.create(inputStream)
+            val sheet = workbook.getSheetAt(0)
+
+            for (row in sheet) {
+                if (row.rowNum == 0) continue // Saltar encabezados
+                val nombre = row.getCell(0).stringCellValue
+                val calificacion = row.getCell(1).numericCellValue.toInt()
+                val motivo = if (row.physicalNumberOfCells > 2) row.getCell(2).stringCellValue else ""
+                val accion = if (row.physicalNumberOfCells > 3) row.getCell(3).stringCellValue else ""
+                materias.add(Materia(nombre, calificacion, motivo, accion))
+            }
+            workbook.close()
+            mostrarMaterias()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun mostrarMaterias() {
         listaMaterias.removeAllViews()
         for (materia in materias) {

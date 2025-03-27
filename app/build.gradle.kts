@@ -36,7 +36,9 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.poi)
+    implementation (libs.poi.ooxml)
+    implementation (libs.commons.compress)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
