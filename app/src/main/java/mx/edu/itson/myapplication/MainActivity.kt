@@ -23,11 +23,22 @@ class MainActivity : AppCompatActivity() {
             val user = usuario.text.toString()
             val contrasena = contra.text.toString()
 
-            if (user == "admin" && contrasena == "admin") {
-                val intent = Intent(this, ListaAlumnos::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+            when {
+                user == "admin" && contrasena == "admin" -> {
+                    val intent = Intent(this, ListaAlumnos::class.java)
+                    intent.putExtra("usuario", user)
+                    startActivity(intent)
+                }
+                user == "juan perez" && contrasena == "1234" -> {
+                    val intent = Intent(this, DetalleAlumno::class.java)
+                    intent.putExtra("nombre", "Juan Pérez")
+                    intent.putExtra("semestre", "Semestre 1")
+                    intent.putExtra("permitirImportar", false) // No permitir importar archivos Excel
+                    startActivity(intent)
+                }
+                else -> {
+                    Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                }
             }
         }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

@@ -35,17 +35,22 @@
             val nombre = findViewById<TextView>(R.id.txtNombreEstudiante)
             val semestre = findViewById<TextView>(R.id.Semestre)
             listaMaterias = findViewById(R.id.listaMaterias)
+            val btnImportar: Button = findViewById(R.id.btnImportarExcel)
 
             val nombreEstudiante = intent.getStringExtra("nombre")
             val semestreEstudiante = intent.getStringExtra("semestre")
+            val permitirImportar = intent.getBooleanExtra("permitirImportar", true)
 
             nombre.text = nombreEstudiante
             semestre.text = semestreEstudiante
-            val btnImportar: Button = findViewById(R.id.btnImportarExcel)
-            btnImportar.setOnClickListener { seleccionarArchivoExcel() }
+
+            if (!permitirImportar) {
+                btnImportar.visibility = View.GONE
+            } else {
+                btnImportar.setOnClickListener { seleccionarArchivoExcel() }
+            }
 
             mostrarMaterias()
-
             ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
                 val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
                 v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
