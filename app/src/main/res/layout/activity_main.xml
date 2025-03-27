@@ -26,14 +26,14 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/category_24px"
-            android:tint="#FFFFFF"
             android:contentDescription="App Logo"
-            android:scaleType="centerInside"/>
+            android:scaleType="centerInside"
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mi App"
+            android:text="Mentory"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="#FFEB55"
@@ -141,6 +141,7 @@
         android:paddingEnd="24dp"
         android:elevation="8dp"
         android:transitionName="button_transition"
-        android:stateListAnimator="@anim/button_elevation_anim"/>
+        android:stateListAnimator="@anim/button_elevation_anim"
+        />
 
 </LinearLayout>
