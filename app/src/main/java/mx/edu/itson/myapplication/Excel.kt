@@ -5,6 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import mx.edu.itson.Mentory.R
 
 class Excel : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

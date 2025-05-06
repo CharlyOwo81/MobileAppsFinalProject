@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "mx.edu.itson.myapplication"
+    namespace = "mx.edu.itson.Mentory"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "mx.edu.itson.myapplication"
+        applicationId = "mx.edu.itson.Mentory"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

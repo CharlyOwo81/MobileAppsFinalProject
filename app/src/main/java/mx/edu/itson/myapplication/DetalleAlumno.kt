@@ -1,5 +1,6 @@
     package mx.edu.itson.myapplication
 
+    import android.annotation.SuppressLint
     import android.app.Activity
     import android.content.Intent
     import android.net.Uri
@@ -16,11 +17,13 @@
     import androidx.appcompat.app.AppCompatActivity
     import androidx.core.view.ViewCompat
     import androidx.core.view.WindowInsetsCompat
+    import mx.edu.itson.Mentory.R
     import org.apache.poi.xssf.usermodel.XSSFWorkbook
     import java.io.InputStream
+    import androidx.core.view.isVisible
 
     class DetalleAlumno : AppCompatActivity() {
-         lateinit var listaMaterias: LinearLayout
+         private lateinit var listaMaterias: LinearLayout
          val materias = mutableListOf(
             Materia("Matemáticas", 65, "No estudie lo suficiente", "Asistir a tutorías"),
             Materia("Física", 80),
@@ -101,6 +104,7 @@
             }
         }
 
+        @SuppressLint("SetTextI18n")
         private fun mostrarMaterias() {
             listaMaterias.removeAllViews()
             for (materia in materias) {
@@ -127,7 +131,7 @@
                 }
 
                 btnDesplegar.setOnClickListener {
-                    layoutDetalles.visibility = if (layoutDetalles.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                    layoutDetalles.visibility = if (layoutDetalles.isVisible) View.GONE else View.VISIBLE
                 }
 
                 listaMaterias.addView(view)
