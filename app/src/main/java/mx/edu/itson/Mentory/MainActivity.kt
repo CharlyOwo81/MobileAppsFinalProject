@@ -1,4 +1,4 @@
-package mx.edu.itson.myapplication
+package mx.edu.itson.Mentory
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.firestore.FirebaseFirestore
-import mx.edu.itson.Mentory.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,8 +24,8 @@ class MainActivity : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
 
         boton.setOnClickListener {
-            val user = usuario.text.toString()
-            val contrasena = contra.text.toString()
+            val user = usuario.text.toString().trim()
+            val contrasena = contra.text.toString().trim()
 
             // Verificar si es docente
             db.collection("Docentes")
@@ -55,6 +54,7 @@ class MainActivity : AppCompatActivity() {
                                     intent.putExtra("nombre", tutoradoDoc.getString("nombre"))
                                     intent.putExtra("semestre", tutoradoDoc.getLong("semestre").toString())
                                     intent.putStringArrayListExtra("materias", materias)
+                                    intent.putExtra("permitirImportar", false)
                                     startActivity(intent)
                                 } else {
                                     Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()

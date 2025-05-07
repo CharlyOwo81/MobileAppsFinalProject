@@ -1,4 +1,4 @@
-package mx.edu.itson.myapplication
+package mx.edu.itson.Mentory
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -10,7 +10,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
-import mx.edu.itson.Mentory.R
 
 class ListaAlumnos : AppCompatActivity() {
 

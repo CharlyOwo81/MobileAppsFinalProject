@@ -1,4 +1,4 @@
-package mx.edu.itson.myapplication
+package mx.edu.itson.Mentory
 
 import android.app.Activity
 import android.content.Intent
@@ -13,7 +13,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.google.firebase.firestore.FirebaseFirestore
-import mx.edu.itson.Mentory.R
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.InputStream
 

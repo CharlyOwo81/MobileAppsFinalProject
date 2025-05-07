@@ -1,4 +1,4 @@
-package mx.edu.itson.myapplication
+package mx.edu.itson.Mentory
 
 import org.junit.Test
 

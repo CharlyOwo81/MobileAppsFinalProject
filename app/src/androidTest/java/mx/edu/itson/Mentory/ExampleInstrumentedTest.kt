@@ -1,4 +1,4 @@
-package mx.edu.itson.myapplication
+package mx.edu.itson.Mentory
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
