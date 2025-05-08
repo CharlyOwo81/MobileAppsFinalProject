@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ListaAlumnos : AppCompatActivity() {
@@ -17,6 +18,9 @@ class ListaAlumnos : AppCompatActivity() {
     lateinit var adapter: ArrayAdapter<String>
     val alumnos = mutableListOf<Alumno>()
     val db = FirebaseFirestore.getInstance()
+    var tutoradosIds: ArrayList<String>? = null
+    var docenteId: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +31,17 @@ class ListaAlumnos : AppCompatActivity() {
         val boton: Button = findViewById(R.id.btnAgregar)
         val logout: Button = findViewById(R.id.btnLogout)
         listaAlumnos = findViewById(R.id.listaAlumnos)
+        docenteId = intent.getStringExtra("docenteId")
+
+
+
+        tutoradosIds = intent.getStringArrayListExtra("tutoradosIds")
 
         cargarAlumnos()
 
         listaAlumnos.setOnItemClickListener { _, _, position, _ ->
             val intent = Intent(this, DetalleAlumno::class.java)
+            intent.putExtra("alumnoId", alumnos[position].id)
             intent.putExtra("nombre", alumnos[position].nombre)
             intent.putExtra("semestre", alumnos[position].semestre)
             startActivity(intent)
@@ -51,21 +61,41 @@ class ListaAlumnos : AppCompatActivity() {
     }
 
     private fun cargarAlumnos() {
-        db.collection("alumnos").get()
-            .addOnSuccessListener { result ->
-                alumnos.clear()
-                for (document in result) {
-                    val nombre = document.getString("nombre") ?: ""
-                    val semestre = document.getString("semestre") ?: ""
-                    val color = document.getString("color") ?: "Ninguno"
-                    alumnos.add(Alumno(nombre, semestre, color))
+        if (tutoradosIds.isNullOrEmpty()) {
+            Toast.makeText(this, "No hay tutorados asignados", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Dividir los IDs en grupos de 10 si hay más de 10, porque Firebase permite máximo 10 elementos en whereIn
+        val gruposIds = tutoradosIds!!.chunked(10)
+        alumnos.clear()
+
+        var gruposProcesados = 0
+
+        for (grupo in gruposIds) {
+            db.collection("Tutorados")
+                .whereIn(FieldPath.documentId(), grupo)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        val id = document.id
+                        val nombre = document.getString("nombre") ?: ""
+                        val semestre = document.getLong("semestre")?.toString() ?: ""
+                        val color = document.getString("color") ?: "Ninguno"
+                        alumnos.add(Alumno(nombre, id, semestre, color))
+                    }
+
+                    gruposProcesados++
+                    if (gruposProcesados == gruposIds.size) {
+                        // Solo actualizamos la vista cuando todos los grupos se hayan cargado
+                        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, alumnos.map { "${it.nombre} - ${it.semestre}" })
+                        listaAlumnos.adapter = adapter
+                    }
                 }
-                adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, alumnos.map { "${it.nombre} - ${it.semestre}" })
-                listaAlumnos.adapter = adapter
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al cargar alumnos", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error al cargar tutorados", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun mostrarDialogoAgregarAlumno() {
@@ -82,24 +112,55 @@ class ListaAlumnos : AppCompatActivity() {
             .setTitle("Agregar Alumno")
             .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
-                val nombre = Nombre.text.toString()
-                val semestre = Semestre.text.toString()
+                val nombre = Nombre.text.toString().trim()
+                val semestreTexto = Semestre.text.toString().trim()
                 val color = ListaColores.selectedItem.toString()
 
-                if (nombre.isNotEmpty() && semestre.isNotEmpty()) {
+                if (nombre.isNotEmpty() && semestreTexto.isNotEmpty()) {
+                    val semestre = semestreTexto.toIntOrNull() ?: 1
+
                     val alumno = hashMapOf(
                         "nombre" to nombre,
                         "semestre" to semestre,
-                        "color" to color
+                        "color" to color,
+                        "apellido_paterno" to "",
+                        "apellido_materno" to "",
+                        "correo" to "",
+                        "contrasenia" to "",
+                        "telefono" to "",
+                        "estatus" to "Sin seguimiento",
+                        "materias" to emptyList<Map<String, Any>>(),
+                        "accionesRegistradas" to emptyList<Any>(),
+                        "alertas" to emptyList<Any>()
                     )
-                    db.collection("alumnos").add(alumno)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Alumno agregado", Toast.LENGTH_SHORT).show()
-                            cargarAlumnos()
+
+                    db.collection("Tutorados").add(alumno)
+                        .addOnSuccessListener { docRef ->
+                            val nuevoId = docRef.id
+
+                            // Agregar el nuevo ID a la lista local
+                            if (tutoradosIds == null) {
+                                tutoradosIds = arrayListOf()
+                            }
+                            tutoradosIds!!.add(nuevoId)
+
+                            // Actualizar el campo tutoradosImpartidos del docente
+                            db.collection("Docentes").document(docenteId!!)
+                                .update("tutoradosImpartidos", tutoradosIds)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "Alumno agregado y asignado al docente", Toast.LENGTH_SHORT).show()
+                                    cargarAlumnos()
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
+                                }
                         }
                         .addOnFailureListener {
                             Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
                         }
+
+                } else {
+                    Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Cancelar", null)

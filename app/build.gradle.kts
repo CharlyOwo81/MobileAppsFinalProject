@@ -47,6 +47,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx:25.1.3")
     implementation ("com.google.firebase:firebase-core:21.1.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

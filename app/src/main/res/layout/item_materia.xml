@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/materia_card_background"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp"
+    android:elevation="4dp">
+
+    <!-- Nombre de la Materia -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/materia_card_background"
-        android:padding="16dp"
-        android:layout_marginBottom="12dp"
-        android:elevation="4dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <!-- Nombre de la Materia -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/Materia"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:text="Nombre de la Materia"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#640D5F"
+            android:shadowColor="#40000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2" />
 
-            <TextView
-                android:id="@+id/Materia"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Nombre de la Materia"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#640D5F"
-                android:shadowColor="#40000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="2"/>
-
-            <ImageButton
-                android:id="@+id/btnDesplegar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_arrow_down"
-                android:background="@null"
-                android:tint="#D91656"
-                android:contentDescription="Desplegar detalles"
-                android:visibility="visible"/>
+        <ImageButton
+            android:id="@+id/btnDesplegar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_arrow_down"
+            android:background="@null"
+            android:contentDescription="Desplegar detalles"
+            android:visibility="visible"
+            app:tint="#D91656" />
         </LinearLayout>
 
         <!-- Calificación de la materia -->
@@ -85,6 +86,15 @@
                 android:textColor="#640D5F"
                 android:textColorHint="#EE66A6"
                 android:visibility="visible"/>
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guardar cambios"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#D91656"
+                android:textColor="#FFFFFF"
+                android:elevation="2dp"/>
         </LinearLayout>
 
     </LinearLayout>
