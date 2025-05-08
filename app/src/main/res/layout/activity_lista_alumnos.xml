@@ -39,7 +39,8 @@
             android:shadowColor="#4D2A3447"
             android:shadowDx="3"
             android:shadowDy="3"
-            android:shadowRadius="6"/>
+            android:shadowRadius="6"
+            />
     </LinearLayout>
 
     <ListView
@@ -50,12 +51,13 @@
         android:background="@drawable/listview_background"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:padding="10dp"
+        android:padding="16dp"
         android:clipToPadding="false"
         android:elevation="6dp"
+        android:textColor="@color/pink"
+        android:textSize="25sp"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
-
         />
 
     <Button

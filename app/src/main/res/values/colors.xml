@@ -3,5 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="deepFucsia">#D91656</color>
-    <color name="softPink">#640D5F</color>
+    <color name="purple">#640D5F</color>
+    <color name="pink">#EE66A6</color>
 </resources>
