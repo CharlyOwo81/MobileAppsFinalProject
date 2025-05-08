@@ -1,132 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@drawable/striped_background"
-    android:padding="20dp">
+    android:layout_height="match_parent">
 
-    <!-- Cabecera -->
-    <LinearLayout
+    <!-- Fondo separado en un ImageView -->
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="@drawable/header_background"
-        android:padding="16dp"
-        android:layout_marginBottom="30dp"
-        android:elevation="6dp">
+        android:layout_height="match_parent"
+        android:src="@drawable/striped_background"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null" />
 
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/diversity_3_24px"
-            android:tint="#FFFFFF"
-            android:contentDescription="Add Student Icon"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nuevo Estudiante"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginStart="12dp"
-            android:shadowColor="#40000000"
-            android:shadowDx="2"
-            android:shadowDy="2"
-            android:shadowRadius="4"/>
-    </LinearLayout>
-
-    <!-- Campo Nombre -->
-    <LinearLayout
+    <!-- Contenido scrollable -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/edittext_background"
-        android:padding="12dp"
-        android:layout_marginBottom="20dp"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/diversity_3_24px"
-            android:tint="#D91656"
-            android:layout_gravity="center_vertical"/>
-
-        <EditText
-            android:id="@+id/Nombre"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Nombre del estudiante"
-            android:background="@null"
-            android:paddingStart="12dp"
-            android:textColor="#640D5F"
-            android:textColorHint="#EE66A6"
-            android:textSize="16sp"/>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="20dp">
 
-    <!-- Campo Semestre -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/edittext_background"
-        android:padding="12dp"
-        android:layout_marginBottom="20dp"
-        android:elevation="4dp">
+            <!-- Cabecera -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@drawable/header_background"
+                android:padding="16dp"
+                android:layout_marginBottom="30dp"
+                android:elevation="6dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_calendar"
-            android:tint="#D91656"
-            android:layout_gravity="center_vertical"/>
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/diversity_3_24px"
+                    android:contentDescription="Add Student Icon"
+                    app:tint="#FFFFFF" />
 
-        <EditText
-            android:id="@+id/Semestre"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Semestre"
-            android:background="@null"
-            android:paddingStart="12dp"
-            android:textColor="#640D5F"
-            android:textColorHint="#EE66A6"
-            android:textSize="16sp"/>
-    </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nuevo Estudiante"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="12dp"
+                    android:shadowColor="#40000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4"/>
+            </LinearLayout>
 
-    <!-- Spinner de Colores -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/spinner_background"
-        android:padding="12dp"
-        android:layout_marginBottom="30dp"
-        android:elevation="4dp">
+            <!-- Campo Nombre -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/edittext_background"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp"
+                android:elevation="4dp">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_palette"
-            android:tint="#D91656"
-            android:layout_gravity="center_vertical"/>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/diversity_3_24px"
+                    android:tint="#D91656"
+                    android:layout_gravity="center_vertical"/>
 
-        <Spinner
-            android:id="@+id/colores"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@null"
-            android:paddingStart="12dp"
-            android:spinnerMode="dropdown"
-            android:dropDownVerticalOffset="8dp"
-            android:popupBackground="@drawable/spinner_dropdown_background"/>
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/Nombre"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Nombre del estudiante"
+                    android:background="@null"
+                    android:paddingStart="12dp"
+                    android:textColor="#640D5F"
+                    android:textColorHint="#EE66A6"
+                    android:textSize="16sp"/>
+            </LinearLayout>
 
-</LinearLayout>
+            <!-- Campo Semestre -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/edittext_background"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp"
+                android:elevation="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_calendar"
+                    android:tint="#D91656"
+                    android:layout_gravity="center_vertical"/>
+
+                <Spinner
+                    android:id="@+id/Semestre"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:paddingStart="12dp"
+                    android:spinnerMode="dropdown"
+                    android:dropDownVerticalOffset="8dp"
+                    android:popupBackground="@drawable/spinner_dropdown_background"/>
+            </LinearLayout>
+
+            <!-- Spinner de Colores -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp"
+                android:layout_marginBottom="30dp"
+                android:elevation="4dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_palette"
+                    android:layout_gravity="center_vertical"
+                    app:tint="#D91656" />
+
+                <Spinner
+                    android:id="@+id/colores"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:paddingStart="12dp"
+                    android:spinnerMode="dropdown"
+                    android:dropDownVerticalOffset="8dp"
+                    android:popupBackground="@drawable/spinner_dropdown_background"/>
+            </LinearLayout>
+
+            <!-- Cabecera -->
+            <LinearLayout
+                android:layout_width="348dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/header_background"
+                android:elevation="6dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:shadowColor="#40000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="4"
+                    android:text="Ingrese Materias"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Contenedor dinámico de materias -->
+            <LinearLayout
+                android:id="@+id/contenedorMaterias"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:elevation="4dp"
+                android:layout_marginBottom="16dp"
+                android:weightSum="2">
+
+                <!-- Botón Agregar Materia -->
+                <Button
+                    android:id="@+id/btnAgregarMateria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="+ Agregar Materia"
+                    android:backgroundTint="@color/deepFucsia"
+                    android:textColor="#FFFFFF"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp" />
+
+                <!-- Botón Eliminar Materia -->
+                <Button
+                    android:id="@+id/btnEliminarMateria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="- Eliminar Materia"
+                    android:backgroundTint="@color/deepFucsia"
+                    android:textColor="#FFFFFF"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- Botón para guardar -->
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Guardar Alumno"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/deepFucsia"
+                android:textColor="#FFFFFF"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="8dp"
+                android:layout_marginTop="16dp"
+                android:elevation="4dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

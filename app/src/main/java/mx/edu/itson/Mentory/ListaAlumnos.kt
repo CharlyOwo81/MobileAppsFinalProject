@@ -2,7 +2,9 @@ package mx.edu.itson.Mentory
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -60,7 +62,7 @@ class ListaAlumnos : AppCompatActivity() {
                     val color = document.getString("color") ?: "Ninguno"
                     alumnos.add(Alumno(nombre, semestre, color))
                 }
-                adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, alumnos.map { "${it.nombre} - ${it.semestre}" })
+                adapter = ArrayAdapter(this, R.layout.list_item, R.id.textViewAlumno, alumnos.map { "${it.nombre} - ${it.semestre}" })
                 listaAlumnos.adapter = adapter
             }
             .addOnFailureListener {
@@ -69,40 +71,48 @@ class ListaAlumnos : AppCompatActivity() {
     }
 
     private fun mostrarDialogoAgregarAlumno() {
-        val dialogView = layoutInflater.inflate(R.layout.agregar_alumno, null)
-        val Nombre: EditText = dialogView.findViewById(R.id.Nombre)
-        val Semestre: EditText = dialogView.findViewById(R.id.Semestre)
-        val ListaColores: Spinner = dialogView.findViewById(R.id.colores)
+        val intent = Intent(this, AgregarAlumnoActivity::class.java)
+        startActivity(intent)
+    }
 
-        val opcionesColor = arrayOf("Ninguno", "Asesorías", "Atención Psicológica", "Ambas")
-        val adapterSpinner = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opcionesColor)
-        ListaColores.adapter = adapterSpinner
+    private fun agregarCampoMateria(contenedor: LinearLayout) {
+        val layoutMateria = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 8, 0, 8)
+            layoutParams = params
+        }
 
-        AlertDialog.Builder(this)
-            .setTitle("Agregar Alumno")
-            .setView(dialogView)
-            .setPositiveButton("Guardar") { _, _ ->
-                val nombre = Nombre.text.toString()
-                val semestre = Semestre.text.toString()
-                val color = ListaColores.selectedItem.toString()
-
-                if (nombre.isNotEmpty() && semestre.isNotEmpty()) {
-                    val alumno = hashMapOf(
-                        "nombre" to nombre,
-                        "semestre" to semestre,
-                        "color" to color
-                    )
-                    db.collection("alumnos").add(alumno)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Alumno agregado", Toast.LENGTH_SHORT).show()
-                            cargarAlumnos()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
-                        }
+        val nuevaMateria = EditText(this).apply {
+            id = View.generateViewId()
+            setHint("Materia")
+            setTextColor(Color.BLACK)
+            setHintTextColor(Color.GRAY)
+            setBackgroundResource(R.drawable.edittext_background)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        nuevaMateria.id = View.generateViewId()
+        val btnEliminar = Button(this).apply {
+            text = "X"
+            setBackgroundColor(R.drawable.button_background)
+            setTextColor(Color.WHITE)
+            setOnClickListener {
+                if (contenedor.childCount > 1) { // si hay más de 1 campo
+                    contenedor.removeView(layoutMateria)
+                } else {
+                    Toast.makeText(this@ListaAlumnos, "Debe haber al menos una materia", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        layoutMateria.addView(nuevaMateria)
+        layoutMateria.addView(btnEliminar)
+
+        contenedor.addView(layoutMateria, contenedor.childCount - 1) // lo agrega antes del botón Agregar
     }
+
+
 }
