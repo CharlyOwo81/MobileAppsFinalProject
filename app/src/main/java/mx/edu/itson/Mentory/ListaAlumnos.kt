@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -80,7 +81,7 @@ class ListaAlumnos : AppCompatActivity() {
                     for (document in result) {
                         val id = document.id
                         val nombre = document.getString("nombre") ?: ""
-                        val semestre = document.getLong("semestre")?.toString() ?: ""
+                        val semestre = document.getString("semestre") ?: ""
                         val color = document.getString("color") ?: "Ninguno"
                         alumnos.add(Alumno(nombre, id, semestre, color))
                     }
@@ -99,71 +100,15 @@ class ListaAlumnos : AppCompatActivity() {
     }
 
     private fun mostrarDialogoAgregarAlumno() {
-        val dialogView = layoutInflater.inflate(R.layout.agregar_alumno, null)
-        val Nombre: EditText = dialogView.findViewById(R.id.Nombre)
-        val Semestre: EditText = dialogView.findViewById(R.id.Semestre)
-        val ListaColores: Spinner = dialogView.findViewById(R.id.colores)
+        val intent = Intent(this, AgregarAlumnoActivity::class.java)
+        intent.putExtra("docenteId", docenteId)
+        intent.putStringArrayListExtra("tutoradosIds", ArrayList(tutoradosIds ?: listOf()))
+        agregarAlumnoLauncher.launch(intent)
+    }
 
-        val opcionesColor = arrayOf("Ninguno", "Asesorías", "Atención Psicológica", "Ambas")
-        val adapterSpinner = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, opcionesColor)
-        ListaColores.adapter = adapterSpinner
-
-        AlertDialog.Builder(this)
-            .setTitle("Agregar Alumno")
-            .setView(dialogView)
-            .setPositiveButton("Guardar") { _, _ ->
-                val nombre = Nombre.text.toString().trim()
-                val semestreTexto = Semestre.text.toString().trim()
-                val color = ListaColores.selectedItem.toString()
-
-                if (nombre.isNotEmpty() && semestreTexto.isNotEmpty()) {
-                    val semestre = semestreTexto.toIntOrNull() ?: 1
-
-                    val alumno = hashMapOf(
-                        "nombre" to nombre,
-                        "semestre" to semestre,
-                        "color" to color,
-                        "apellido_paterno" to "",
-                        "apellido_materno" to "",
-                        "correo" to "",
-                        "contrasenia" to "",
-                        "telefono" to "",
-                        "estatus" to "Sin seguimiento",
-                        "materias" to emptyList<Map<String, Any>>(),
-                        "accionesRegistradas" to emptyList<Any>(),
-                        "alertas" to emptyList<Any>()
-                    )
-
-                    db.collection("Tutorados").add(alumno)
-                        .addOnSuccessListener { docRef ->
-                            val nuevoId = docRef.id
-
-                            // Agregar el nuevo ID a la lista local
-                            if (tutoradosIds == null) {
-                                tutoradosIds = arrayListOf()
-                            }
-                            tutoradosIds!!.add(nuevoId)
-
-                            // Actualizar el campo tutoradosImpartidos del docente
-                            db.collection("Docentes").document(docenteId!!)
-                                .update("tutoradosImpartidos", tutoradosIds)
-                                .addOnSuccessListener {
-                                    Toast.makeText(this, "Alumno agregado y asignado al docente", Toast.LENGTH_SHORT).show()
-                                    cargarAlumnos()
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
-                                }
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
-                        }
-
-                } else {
-                    Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+    private val agregarAlumnoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            cargarAlumnos() // vuelve a cargar alumnos después de agregar
+        }
     }
 }

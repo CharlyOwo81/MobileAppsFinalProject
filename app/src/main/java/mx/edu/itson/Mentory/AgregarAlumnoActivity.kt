@@ -118,13 +118,44 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             "nombre" to nombre,
             "semestre" to semestre,
             "color" to color,
-            "materias" to materias // <-- ahora también guardamos las materias
+            "materias" to materias, // <-- ahora también guardamos las materias
+            "color" to color,
+            "apellido_paterno" to "",
+            "apellido_materno" to "",
+            "correo" to "",
+            "contrasenia" to "",
+            "telefono" to "",
+            "estatus" to "Sin seguimiento",
+            "accionesRegistradas" to emptyList<Any>(),
+            "alertas" to emptyList<Any>()
         )
 
-        db.collection("alumnos").add(alumno)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Alumno agregado correctamente", Toast.LENGTH_SHORT).show()
-                finish() // Cierra la pantalla y regresa
+        // Recuperamos docenteId y lista actual de tutoradosIds desde el intent (si se pasan)
+        val docenteId = intent.getStringExtra("docenteId")
+        val tutoradosIds = intent.getStringArrayListExtra("tutoradosIds") ?: arrayListOf()
+
+        db.collection("Tutorados").add(alumno)
+            .addOnSuccessListener { docRef ->
+                val nuevoId = docRef.id
+
+                // Agregar el nuevo ID a la lista local
+                tutoradosIds.add(nuevoId)
+
+                // Actualizar el campo tutoradosImpartidos del docente
+                if (docenteId != null) {
+                    db.collection("Docentes").document(docenteId)
+                        .update("tutoradosImpartidos", tutoradosIds)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Alumno agregado y asignado al docente", Toast.LENGTH_SHORT).show()
+                            setResult(RESULT_OK)
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    Toast.makeText(this, "No se pudo asignar al docente (docenteId nulo)", Toast.LENGTH_SHORT).show()
+                }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
