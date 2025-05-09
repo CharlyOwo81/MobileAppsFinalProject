@@ -182,6 +182,8 @@ class DetalleAlumno : AppCompatActivity() {
             val motivo: EditText = view.findViewById(R.id.Motivo)
             val accion: EditText = view.findViewById(R.id.Accion)
             val btnGuardar: Button = view.findViewById(R.id.btnGuardar)
+            val labelMotivo: TextView = view.findViewById(R.id.labelMotivo)
+            val labelAccion: TextView = view.findViewById(R.id.labelAccion)
 
             nombreMateria.text = materia.nombre
             calificacion.text = "Calificación: ${materia.calificacion}"
@@ -192,7 +194,8 @@ class DetalleAlumno : AppCompatActivity() {
                 accion.setText(materia.accion)
                 motivo.visibility = View.VISIBLE
                 accion.visibility = View.VISIBLE
-
+                labelMotivo.visibility = View.VISIBLE
+                labelAccion.visibility = View.VISIBLE
                 if (permitirEditarCampos) {
                     motivo.isEnabled = true  // Campos editables para el estudiante
                     accion.isEnabled = true

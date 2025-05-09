@@ -62,30 +62,51 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp">
 
+            <TextView
+                android:id="@+id/labelMotivo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Motivo de reprobación"
+                android:textStyle="bold"
+                android:textColor="#640D5F"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp" />
+
             <EditText
                 android:id="@+id/Motivo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Motivo de la reprobación"
                 android:background="@drawable/detail_edittext_background"
                 android:padding="12dp"
                 android:textSize="14sp"
                 android:textColor="#640D5F"
                 android:textColorHint="#EE66A6"
                 android:layout_marginBottom="12dp"
-                android:visibility="visible"/>
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/labelAccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Acción para aprobar"
+                android:textStyle="bold"
+                android:textColor="#640D5F"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp" />
 
             <EditText
                 android:id="@+id/Accion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Acción para aprobar"
                 android:background="@drawable/detail_edittext_background"
                 android:padding="12dp"
                 android:textSize="14sp"
                 android:textColor="#640D5F"
                 android:textColorHint="#EE66A6"
-                android:visibility="visible"/>
+                android:visibility="visible" />
+
             <Button
                 android:id="@+id/btnGuardar"
                 android:layout_width="wrap_content"
