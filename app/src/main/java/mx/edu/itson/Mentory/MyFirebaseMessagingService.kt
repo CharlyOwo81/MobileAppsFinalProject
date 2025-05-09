@@ -1,39 +1,55 @@
-import android.Manifest
+package mx.edu.itson.Mentory;
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import androidx.annotation.RequiresPermission
+import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import mx.edu.itson.Mentory.R
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
-
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+public class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        // Si la notificación viene con el payload de notification
         remoteMessage.notification?.let {
-            showNotification(it.title ?: "Título", it.body ?: "Mensaje")
+            showNotification(it.title, it.body)
         }
     }
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun showNotification(title: String, message: String) {
-        val channelId = "default_channel"
+
+    private fun showNotification(title: String?, message: String?) {
+        val builder = NotificationCompat.Builder(this, "canal_id")
+                .setContentTitle(title)
+                .setContentText(message)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Notificaciones", NotificationManager.IMPORTANCE_HIGH)
-            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val channel = NotificationChannel("canal_id", "Notificaciones", NotificationManager.IMPORTANCE_HIGH)
             manager.createNotificationChannel(channel)
         }
 
-        val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .build()
+        manager.notify(1, builder.build())
+    }
 
-        NotificationManagerCompat.from(this).notify(1, notification)
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        // Aquí deberías guardar el token en tu base de datos Firestore
+        Log.d("FCM", "Token nuevo: $token")
+        saveTokenToFirestore(token)
+    }
+
+    private fun saveTokenToFirestore(token: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val db = FirebaseFirestore.getInstance()
+        userId?.let {
+            db.collection("Tutorados").document(it).update("token", token)
+                    .addOnSuccessListener { Log.d("FCM", "Token guardado en Firestore") }
+                .addOnFailureListener { e -> Log.w("FCM", "Error guardando token", e) }
+        }
     }
 }
+

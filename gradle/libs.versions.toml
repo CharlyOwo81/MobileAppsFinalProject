@@ -15,6 +15,7 @@ poiOoxml = "5.2.3"
 sheetparser = "2.0.1"
 media3CommonKtx = "1.6.1"
 firebaseMessagingKtx = "24.1.1"
+appcompatVersion = "1.7.0"
 
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "coreKtxVersion" }
@@ -33,6 +34,7 @@ poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
 sheetparser = { module = "com.github.SheetParser:SheetParser", version.ref = "sheetparser" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

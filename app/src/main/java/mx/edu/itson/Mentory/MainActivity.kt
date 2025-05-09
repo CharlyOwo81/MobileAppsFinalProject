@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,12 +57,24 @@ class MainActivity : AppCompatActivity() {
                             .addOnSuccessListener { tutorados ->
                                 if (!tutorados.isEmpty) {
                                     val tutoradoDoc = tutorados.documents[0]
+                                    val alumnoId = tutoradoDoc.id
+
+                                    // Obtener token FCM y guardarlo
+                                    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            val token = task.result
+                                            db.collection("Tutorados").document(alumnoId)
+                                                .update("token", token)
+                                        }
+                                    }
+
                                     val intent = Intent(this, DetalleAlumno::class.java)
                                     intent.putExtra("nombre", tutoradoDoc.getString("nombre"))
-                                    intent.putExtra("semestre", tutoradoDoc.getString("semestre"))  // Se pasa como String
-                                    intent.putExtra("alumnoId", tutoradoDoc.id)  // Usamos el ID del alumno
+                                    intent.putExtra("semestre", tutoradoDoc.getString("semestre"))
+                                    intent.putExtra("alumnoId", alumnoId)
                                     intent.putExtra("permitirImportar", false)
                                     intent.putExtra("permitirEditarCampos", true)
+
                                     startActivity(intent)
                                 } else {
                                     Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()
