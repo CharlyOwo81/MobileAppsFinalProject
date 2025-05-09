@@ -105,6 +105,9 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             return
         }
 
+        val correoGenerado = generarCorreo(nombre)
+        val contraseniaGenerada = generarContrasenia()
+
         val materias = mutableListOf<Map<String, Any>>()
         for (i in 0 until contenedorMaterias.childCount) {
             val layout = contenedorMaterias.getChildAt(i) as LinearLayout
@@ -133,8 +136,8 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             "nombre" to nombre,
             "semestre" to semestre,
             "color" to color,
-            "correo" to "",
-            "contrasenia" to "",
+            "correo" to correoGenerado,
+            "contrasenia" to contraseniaGenerada,
             "telefono" to "",
             "materias" to materias
         )
@@ -165,5 +168,14 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
             }
+    }
+    private fun generarCorreo(nombre: String): String {
+        val nombreSinEspacios = nombre.replace("\\s+".toRegex(), "").lowercase()
+        return "$nombreSinEspacios@gmail.com"
+    }
+
+    private fun generarContrasenia(): String {
+        val random = (1000..9999).random()
+        return "random"
     }
 }
