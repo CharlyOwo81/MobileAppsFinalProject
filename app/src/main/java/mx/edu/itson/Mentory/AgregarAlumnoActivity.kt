@@ -74,32 +74,14 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             setBackgroundResource(R.drawable.edittext_background)
         }
 
-        val calificacion = EditText(this).apply {
-            hint = "Calificación"
-            inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            setTextColor(Color.BLACK)
-            setHintTextColor(Color.GRAY)
-            setBackgroundResource(R.drawable.edittext_background)
-        }
+        // Campos ocultos (no añadidos visualmente)
+        val calificacion = EditText(this)
+        val accion = EditText(this)
+        val motivo = EditText(this)
 
-        val accion = EditText(this).apply {
-            hint = "Acción"
-            setTextColor(Color.BLACK)
-            setHintTextColor(Color.GRAY)
-            setBackgroundResource(R.drawable.edittext_background)
-        }
-
-        val motivo = EditText(this).apply {
-            hint = "Motivo"
-            setTextColor(Color.BLACK)
-            setHintTextColor(Color.GRAY)
-            setBackgroundResource(R.drawable.edittext_background)
-        }
-
+        // Guardamos los campos ocultos como tag
         layoutMateria.addView(nombreMateria)
-        layoutMateria.addView(calificacion)
-        layoutMateria.addView(accion)
-        layoutMateria.addView(motivo)
+        layoutMateria.tag = listOf(calificacion, accion, motivo)
 
         contenedorMaterias.addView(layoutMateria, contenedorMaterias.childCount - 1)
     }
@@ -128,9 +110,11 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             val layout = contenedorMaterias.getChildAt(i) as LinearLayout
 
             val nombreMateria = (layout.getChildAt(0) as EditText).text.toString().trim()
-            val calificacionStr = (layout.getChildAt(1) as EditText).text.toString().trim()
-            val accion = (layout.getChildAt(2) as EditText).text.toString().trim()
-            val motivo = (layout.getChildAt(3) as EditText).text.toString().trim()
+            val (calificacionEditText, accionEditText, motivoEditText) = layout.tag as List<EditText>
+
+            val calificacionStr = calificacionEditText.text.toString().trim()
+            val accion = accionEditText.text.toString().trim()
+            val motivo = motivoEditText.text.toString().trim()
 
             if (nombreMateria.isNotEmpty()) {
                 val calificacion = calificacionStr.toIntOrNull() ?: 0
