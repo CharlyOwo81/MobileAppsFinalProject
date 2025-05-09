@@ -176,6 +176,6 @@ class AgregarAlumnoActivity : AppCompatActivity() {
 
     private fun generarContrasenia(): String {
         val random = (1000..9999).random()
-        return "random"
+        return "$random"
     }
 }

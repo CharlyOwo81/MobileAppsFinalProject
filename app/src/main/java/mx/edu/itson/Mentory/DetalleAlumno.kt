@@ -194,17 +194,19 @@ class DetalleAlumno : AppCompatActivity() {
                 accion.visibility = View.VISIBLE
 
                 if (permitirEditarCampos) {
-                    motivo.isEnabled = true
+                    motivo.isEnabled = true  // Campos editables para el estudiante
                     accion.isEnabled = true
                     btnGuardar.visibility = View.VISIBLE
                 } else {
-                    motivo.isEnabled = false
+                    motivo.isEnabled = false  // Campos no editables para el docente
                     accion.isEnabled = false
-                    btnGuardar.visibility = View.GONE
+                    btnGuardar.visibility = View.GONE  // No hay botón de guardar
                 }
             } else {
                 btnDesplegar.visibility = View.GONE
             }
+
+
 
 
             btnDesplegar.setOnClickListener {
@@ -219,9 +221,9 @@ class DetalleAlumno : AppCompatActivity() {
                     .addOnSuccessListener { document ->
                         val materiasArray = document.get("materias") as? MutableList<Map<String, Any>> ?: return@addOnSuccessListener
 
-                        // Buscamos la materia correspondiente
+                        // Busca la materia por el nombre o el campo identificador adecuado
                         val materiaActualizada = materiasArray.map {
-                            if ((it["materiaId"] == materia.materiaId)) {
+                            if ((it["Materia"] as? String)?.equals(materia.nombre, ignoreCase = true) == true) {
                                 it.toMutableMap().apply {
                                     this["motivo"] = nuevoMotivo
                                     this["accion"] = nuevaAccion
@@ -231,7 +233,7 @@ class DetalleAlumno : AppCompatActivity() {
                             }
                         }
 
-                        // Actualizamos el array completo
+                        // Actualiza el array completo en Firestore
                         db.collection("Tutorados").document(alumnoId)
                             .update("materias", materiaActualizada)
                             .addOnSuccessListener {
@@ -246,6 +248,7 @@ class DetalleAlumno : AppCompatActivity() {
                         Toast.makeText(this, "No se pudo obtener el alumno", Toast.LENGTH_SHORT).show()
                     }
             }
+
 
             listaMaterias.addView(view)
         }

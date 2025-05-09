@@ -48,6 +48,7 @@ class ListaAlumnos : AppCompatActivity() {
             intent.putExtra("alumnoId", alumnos[position].id)
             intent.putExtra("nombre", alumnos[position].nombre)
             intent.putExtra("semestre", alumnos[position].semestre)
+            intent.putExtra("permitirEditarCampos", false)
             startActivity(intent)
         }
 
@@ -121,7 +122,7 @@ class ListaAlumnos : AppCompatActivity() {
                                     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                                         val view = super.getView(position, convertView, parent)
                                         val alumno = alumnos[position]
-                                        val textView = view.findViewById<TextView>(android.R.id.text1) 
+                                        val textView = view.findViewById<TextView>(android.R.id.text1)
 
                                         // Aquí decides el color según el campo 'color'
                                         when (alumno.color) {
