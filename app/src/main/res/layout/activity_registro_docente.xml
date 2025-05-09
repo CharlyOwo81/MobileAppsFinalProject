@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/striped_background"
+    android:padding="24dp"
+    tools:context=".RegistroDocente">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Vibrant Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/header_background"
+            android:padding="20dp"
+            android:layout_marginBottom="40dp"
+            android:elevation="10dp"
+            android:clipToPadding="false">
+
+            <ImageView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@drawable/category_24px"
+                android:contentDescription="App Logo"
+                android:scaleType="centerInside"
+                app:tint="#FFCA28" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registro Docente"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginStart="16dp"
+                android:shadowColor="#4A2C1A"
+                android:shadowDx="4"
+                android:shadowDy="4"
+                android:shadowRadius="8"/>
+        </LinearLayout>
+
+        <!-- Nombre -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_background"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/person_24px"
+                app:tint="#F06292"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/etNombre"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Nombre"
+                android:background="@null"
+                android:paddingStart="14dp"
+                android:textColor="#4A148C"
+                android:textColorHint="#F48FB1"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Correo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_background"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_email"
+                app:tint="#F06292"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/etCorreo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Correo"
+                android:inputType="textEmailAddress"
+                android:background="@null"
+                android:paddingStart="14dp"
+                android:textColor="#4A148C"
+                android:textColorHint="#F48FB1"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Teléfono -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_background"
+            android:padding="16dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_phone"
+                app:tint="#F06292"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/etTelefono"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Teléfono"
+                android:inputType="phone"
+                android:background="@null"
+                android:paddingStart="14dp"
+                android:textColor="#4A148C"
+                android:textColorHint="#F48FB1"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Contraseña -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_background"
+            android:padding="16dp"
+            android:layout_marginBottom="32dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/password_24px"
+                app:tint="#F06292"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/etContrasenia"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:background="@null"
+                android:paddingStart="14dp"
+                android:textColor="#4A148C"
+                android:textColorHint="#F48FB1"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Contraseña -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_background"
+            android:padding="16dp"
+            android:layout_marginBottom="32dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/password_24px"
+                app:tint="#F06292"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/etContraseniaConfirmar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Confirmar Contraseña"
+                android:inputType="textPassword"
+                android:background="@null"
+                android:paddingStart="14dp"
+                android:textColor="#4A148C"
+                android:textColorHint="#F48FB1"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Botón Registrar -->
+        <Button
+            android:id="@+id/btnRegistrarDocente"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Registrarme"
+            android:textSize="20sp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF"
+            android:drawableTint="#FFCA28"
+            android:paddingStart="28dp"
+            android:paddingEnd="28dp"
+            android:elevation="10dp"
+            app:backgroundTint="@null"
+            style="@style/Widget.AppCompat.Button" />
+
+    </LinearLayout>
+</ScrollView>

@@ -22,6 +22,12 @@ class MainActivity : AppCompatActivity() {
         val contra: EditText = findViewById(R.id.contra)
         val boton: Button = findViewById(R.id.btnInicio)
         val db = FirebaseFirestore.getInstance()
+        val btnRegistroDocente = findViewById<Button>(R.id.btnRegistroDocente)
+
+        btnRegistroDocente.setOnClickListener {
+            val intent = Intent(this, RegistroDocente::class.java)
+            startActivity(intent)
+        }
 
         boton.setOnClickListener {
             val user = usuario.text.toString().trim()

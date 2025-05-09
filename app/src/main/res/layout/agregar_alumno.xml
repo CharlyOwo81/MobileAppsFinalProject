@@ -189,18 +189,19 @@
                 android:weightSum="2">
 
                 <!-- Botón Agregar Materia -->
+
+                <!-- Botón Eliminar Materia -->
                 <Button
                     android:id="@+id/btnAgregarMateria"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="+ Agregar Materia"
                     android:backgroundTint="@color/deepFucsia"
-                    android:textColor="#FFFFFF"
                     android:paddingHorizontal="16dp"
-                    android:paddingVertical="8dp" />
+                    android:paddingVertical="8dp"
+                    android:text="+ Agregar Materia"
+                    android:textColor="#FFFFFF" />
 
-                <!-- Botón Eliminar Materia -->
                 <Button
                     android:id="@+id/btnEliminarMateria"
                     android:layout_width="0dp"

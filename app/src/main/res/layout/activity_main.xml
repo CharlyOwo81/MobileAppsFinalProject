@@ -50,7 +50,7 @@ android:layout_height="wrap_content"
 android:text="¡Bienvenido!"
 android:textSize="38sp"
 android:textStyle="bold"
-android:textColor="#8E24AA"
+android:textColor="@color/deepFucsia"
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="48dp"
     android:background="@drawable/title_background"
@@ -89,38 +89,39 @@ android:textSize="20sp"
 android:fontFamily="sans-serif-medium"/>
 </LinearLayout>
 
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="horizontal"
-android:background="@drawable/edittext_background"
-android:padding="16dp"
-android:layout_marginBottom="40dp"
-android:elevation="8dp"
-android:transitionName="contra_transition">
-
-<ImageView
-    android:layout_width="32dp"
-    android:layout_height="32dp"
-    android:src="@drawable/password_24px"
-    android:tint="#F06292"
-android:layout_gravity="center_vertical"
-tools:ignore="UseAppTint" />
-
-<EditText
-    android:id="@+id/contra"
-    android:layout_width="0dp"
+    <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:hint="Contraseña"
-    android:inputType="textPassword"
-    android:background="@null"
-    android:paddingStart="14dp"
-    android:textColor="#4A148C"
-android:textColorHint="#F48FB1"
-android:textSize="20sp"
-android:fontFamily="sans-serif-medium"/>
-</LinearLayout>
+    android:orientation="horizontal"
+    android:background="@drawable/edittext_background"
+    android:padding="16dp"
+    android:layout_marginBottom="40dp"
+    android:elevation="8dp"
+    android:transitionName="contra_transition">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/password_24px"
+        android:tint="#F06292"
+    android:layout_gravity="center_vertical"
+    tools:ignore="UseAppTint" />
+
+    <EditText
+        android:id="@+id/contra"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:background="@null"
+        android:paddingStart="14dp"
+        android:textColor="#4A148C"
+        android:textColorHint="#F48FB1"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"/>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnInicio"
@@ -139,4 +140,34 @@ android:fontFamily="sans-serif-medium"/>
         app:backgroundTint="@null"
         style="@style/Widget.AppCompat.Button" />
 
-    </LinearLayout>
+    <!-- Nueva leyenda -->
+    <TextView
+        android:id="@+id/leyendaDocente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿Eres docente y no tienes cuenta?"
+        android:textSize="16sp"
+        android:textColor="@color/deepFucsia"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="sans-serif-medium" />
+
+    <!-- Nuevo botón para registro de docente -->
+    <Button
+        android:id="@+id/btnRegistroDocente"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="246dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:drawableTint="#BA68C8"
+        android:elevation="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="Registrarme como Docente"
+        android:textAllCaps="false"
+        android:layout_gravity="center"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        app:backgroundTint="@null" />
+</LinearLayout>
