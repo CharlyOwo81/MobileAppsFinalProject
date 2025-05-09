@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
             // Verificar si es docente
             db.collection("Docentes")
-                .whereEqualTo("nombre", user)
+                .whereEqualTo("correo", user)
                 .whereEqualTo("contrasenia", contrasena)
                 .get()
                 .addOnSuccessListener { docentes ->
@@ -39,22 +39,23 @@ class MainActivity : AppCompatActivity() {
                         val intent = Intent(this, ListaAlumnos::class.java)
                         intent.putExtra("docenteId", docenteDoc.id)
                         intent.putStringArrayListExtra("tutoradosIds", tutoradosIds)
+                        intent.putExtra("permitirEditarCampos", false) // Docente: no permite editar motivo/acción
                         startActivity(intent)
                     } else {
                         // Si no es docente, verificar si es tutorado (alumno)
                         db.collection("Tutorados")
-                            .whereEqualTo("nombre", user)
+                            .whereEqualTo("correo", user)
                             .whereEqualTo("contrasenia", contrasena)
                             .get()
                             .addOnSuccessListener { tutorados ->
                                 if (!tutorados.isEmpty) {
                                     val tutoradoDoc = tutorados.documents[0]
-                                    val materias = tutoradoDoc.get("materias") as? ArrayList<String>
                                     val intent = Intent(this, DetalleAlumno::class.java)
                                     intent.putExtra("nombre", tutoradoDoc.getString("nombre"))
-                                    intent.putExtra("semestre", tutoradoDoc.getLong("semestre").toString())
-                                    intent.putStringArrayListExtra("materias", materias)
+                                    intent.putExtra("semestre", tutoradoDoc.getString("semestre"))  // Se pasa como String
+                                    intent.putExtra("alumnoId", tutoradoDoc.id)  // Usamos el ID del alumno
                                     intent.putExtra("permitirImportar", false)
+                                    intent.putExtra("permitirEditarCampos", true)
                                     startActivity(intent)
                                 } else {
                                     Toast.makeText(this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show()

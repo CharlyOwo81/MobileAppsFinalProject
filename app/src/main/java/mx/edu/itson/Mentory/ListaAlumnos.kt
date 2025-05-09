@@ -62,41 +62,74 @@ class ListaAlumnos : AppCompatActivity() {
     }
 
     private fun cargarAlumnos() {
-        if (tutoradosIds.isNullOrEmpty()) {
-            Toast.makeText(this, "No hay tutorados asignados", Toast.LENGTH_SHORT).show()
+        if (docenteId.isNullOrEmpty()) {
+            Toast.makeText(this, "ID del docente no disponible", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Dividir los IDs en grupos de 10 si hay más de 10, porque Firebase permite máximo 10 elementos en whereIn
-        val gruposIds = tutoradosIds!!.chunked(10)
-        alumnos.clear()
-
-        var gruposProcesados = 0
-
-        for (grupo in gruposIds) {
-            db.collection("Tutorados")
-                .whereIn(FieldPath.documentId(), grupo)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        val id = document.id
-                        val nombre = document.getString("nombre") ?: ""
-                        val semestre = document.getString("semestre") ?: ""
-                        val color = document.getString("color") ?: "Ninguno"
-                        alumnos.add(Alumno(nombre, id, semestre, color))
-                    }
-
-                    gruposProcesados++
-                    if (gruposProcesados == gruposIds.size) {
-                        // Solo actualizamos la vista cuando todos los grupos se hayan cargado
-                        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, alumnos.map { "${it.nombre} - ${it.semestre}" })
-                        listaAlumnos.adapter = adapter
-                    }
+        db.collection("Docentes").document(docenteId!!)
+            .get()
+            .addOnSuccessListener { document ->
+                val ids = document.get("tutoradosImpartidos") as? List<String>
+                if (ids.isNullOrEmpty()) {
+                    Toast.makeText(this, "No hay tutorados asignados", Toast.LENGTH_SHORT).show()
+                    alumnos.clear()
+                    listaAlumnos.adapter = null
+                    return@addOnSuccessListener
                 }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Error al cargar tutorados", Toast.LENGTH_SHORT).show()
+
+                tutoradosIds = ArrayList(ids)
+                alumnos.clear()
+                val gruposIds = tutoradosIds!!.chunked(10)
+                val alumnosTemp = mutableListOf<Alumno>()
+
+                var gruposProcesados = 0
+                var huboError = false
+
+                for (grupo in gruposIds) {
+                    db.collection("Tutorados")
+                        .whereIn(FieldPath.documentId(), grupo)
+                        .get()
+                        .addOnSuccessListener { result ->
+                            for (document in result) {
+                                val id = document.id
+                                val nombre = document.getString("nombre") ?: ""
+                                val semestre = document.getString("semestre") ?: ""
+                                val color = document.getString("color") ?: "Ninguno"
+                                alumnosTemp.add(Alumno(nombre, id, semestre, color))
+                            }
+                            gruposProcesados++
+                            val ordenSemestres = listOf(
+                                "Primero", "Segundo", "Tercero", "Cuarto", "Quinto",
+                                "Sexto", "Septimo", "Octavo", "Noveno", "Decimo"
+                            )
+
+                            if (gruposProcesados == gruposIds.size && !huboError) {
+                                alumnos.clear()
+                                alumnos.addAll(alumnosTemp.sortedWith(compareBy(
+                                    { ordenSemestres.indexOf(it.semestre) },
+                                    { it.nombre }
+                                )))
+                                adapter = ArrayAdapter(
+                                    this,
+                                    android.R.layout.simple_list_item_1,
+                                    alumnos.map { "${it.nombre} - ${it.semestre}" }
+                                )
+                                listaAlumnos.adapter = adapter
+                            }
+
+                        }
+                        .addOnFailureListener {
+                            if (!huboError) {
+                                huboError = true
+                                Toast.makeText(this, "Error al cargar tutorados", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                 }
-        }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al obtener los datos del docente", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun mostrarDialogoAgregarAlumno() {

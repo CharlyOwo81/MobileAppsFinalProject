@@ -10,6 +10,7 @@
     android:padding="20dp"
     tools:context=".ListaAlumnos">
 
+    <!-- Encabezado -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,10 +40,10 @@
             android:shadowColor="#4D2A3447"
             android:shadowDx="3"
             android:shadowDy="3"
-            android:shadowRadius="6"
-            />
+            android:shadowRadius="6"/>
     </LinearLayout>
 
+    <!-- Lista de Alumnos (ListView sin ScrollView) -->
     <ListView
         android:id="@+id/listaAlumnos"
         android:layout_width="match_parent"
@@ -54,12 +55,12 @@
         android:padding="16dp"
         android:clipToPadding="false"
         android:elevation="6dp"
-        android:textColor="@color/pink"
-        android:textSize="25sp"
         android:scrollbarStyle="outsideOverlay"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
-        />
+        android:textColor="@color/pink"
+        android:textSize="25sp"/>
 
+    <!-- Botón Agregar -->
     <Button
         android:id="@+id/btnAgregar"
         android:layout_width="match_parent"
@@ -78,6 +79,7 @@
         style="@style/Widget.AppCompat.Button"
         app:backgroundTint="@null" />
 
+    <!-- Botón Logout -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
@@ -95,5 +97,4 @@
         android:elevation="8dp"
         style="@style/Widget.AppCompat.Button"
         app:backgroundTint="@null" />
-
 </LinearLayout>

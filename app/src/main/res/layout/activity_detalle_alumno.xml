@@ -53,7 +53,6 @@
         android:textColor="#640D5F"
         android:background="@drawable/text_background"
         android:padding="12dp"
-        android:layout_gravity="center"
         android:gravity="center"
         android:layout_marginBottom="20dp"
         android:elevation="4dp"/>
@@ -69,21 +68,27 @@
         android:background="@drawable/semestre_background"
         android:padding="10dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="20dp"
         android:elevation="3dp"/>
 
-    <!-- Lista de Materias -->
-    <LinearLayout
-        android:id="@+id/listaMaterias"
+    <!-- Lista de Materias con ScrollView -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:background="@drawable/list_background"
-        android:padding="12dp"
-        android:elevation="4dp"/>
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:id="@+id/listaMaterias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/list_background"
+            android:padding="12dp"
+            android:elevation="4dp"/>
+    </ScrollView>
 
+    <!-- Botón fuera del ScrollView -->
     <Button
         android:id="@+id/btnImportarExcel"
         android:layout_width="wrap_content"
@@ -97,9 +102,8 @@
         android:drawableTint="#FFCA28"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="end"
         android:layout_margin="16dp"
         android:elevation="8dp"
-        style="@style/Widget.AppCompat.Button"
-        app:backgroundTint="@null" />
+        app:backgroundTint="@null"/>
 </LinearLayout>

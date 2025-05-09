@@ -23,7 +23,7 @@ class DetalleAlumno : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private lateinit var nombreEstudiante: String
     private lateinit var alumnoId: String
-
+    private var permitirEditarCampos: Boolean = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,6 +33,7 @@ class DetalleAlumno : AppCompatActivity() {
         val semestre = findViewById<TextView>(R.id.Semestre)
         listaMaterias = findViewById(R.id.listaMaterias)
         val btnImportar: Button = findViewById(R.id.btnImportarExcel)
+        permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
 
         nombreEstudiante = intent.getStringExtra("nombre") ?: ""
         alumnoId = intent.getStringExtra("alumnoId") ?: ""
@@ -64,24 +65,15 @@ class DetalleAlumno : AppCompatActivity() {
                 if (!materiasEnAlumno.isNullOrEmpty()) {
                     materias.clear()
                     for (materiaInfo in materiasEnAlumno) {
-                        val materiaId = materiaInfo["materiaId"] as? String ?: continue
-                        val calificacion = (materiaInfo["calificacion"] as? Long)?.toInt() ?: 0
+                        val nombre = materiaInfo["Materia"] as? String ?: continue
+                        val calificacion = (materiaInfo["Calificacion"] as? Long)?.toInt() ?: 0
                         val motivo = materiaInfo["motivo"] as? String ?: ""
                         val accion = materiaInfo["accion"] as? String ?: ""
 
-                        db.collection("materias").document(materiaId).get()
-                            .addOnSuccessListener { materiaDoc ->
-                                if (materiaDoc.exists()) {
-                                    val nombre = materiaDoc.getString("nombre") ?: ""
-
-                                    materias.add(Materia(nombre, calificacion, motivo, accion, materiaId))
-                                    mostrarMaterias()
-                                }
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this, "Error al cargar una materia", Toast.LENGTH_SHORT).show()
-                            }
+                        // Se usa el nombre como ID ya que no hay campo materiaId
+                        materias.add(Materia(nombre, calificacion, motivo, accion, nombre))
                     }
+                    mostrarMaterias()
                 } else {
                     Toast.makeText(this, "El alumno no tiene materias registradas", Toast.LENGTH_SHORT).show()
                 }
@@ -111,29 +103,66 @@ class DetalleAlumno : AppCompatActivity() {
             val workbook = XSSFWorkbook(inputStream)
             val sheet = workbook.getSheetAt(0)
 
+            val materiasDesdeExcel = mutableListOf<Map<String, Any>>()
+
             for (i in 1 until sheet.physicalNumberOfRows) {
                 val row = sheet.getRow(i) ?: continue
 
-                val nombre = row.getCell(0)?.toString() ?: continue
+                val nombre = row.getCell(0)?.toString()?.trim() ?: continue
                 val calificacion = row.getCell(1)?.numericCellValue?.toInt() ?: 0
-                val motivo = row.getCell(2)?.toString() ?: ""
-                val accion = row.getCell(3)?.toString() ?: ""
+                val motivo = row.getCell(2)?.toString()?.trim() ?: ""
+                val accion = row.getCell(3)?.toString()?.trim() ?: ""
 
-                val materia = hashMapOf(
-                    "alumnoId" to alumnoId,
-                    "nombre" to nombre,
-                    "calificacion" to calificacion,
+                val materia = mapOf(
+                    "Materia" to nombre,
+                    "Calificacion" to calificacion,
                     "motivo" to motivo,
                     "accion" to accion
                 )
 
-                db.collection("materias").add(materia)
+                materiasDesdeExcel.add(materia)
             }
 
             workbook.close()
             inputStream?.close()
 
-            cargarMaterias()
+            db.collection("Tutorados").document(alumnoId).get()
+                .addOnSuccessListener { document ->
+                    val materiasExistentes = (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+
+                    for (materiaNueva in materiasDesdeExcel) {
+                        val nombreNueva = materiaNueva["Materia"] as String
+                        val nuevaCalificacion = materiaNueva["Calificacion"]!!
+
+                        // Buscar si ya existe una materia con el mismo nombre
+                        val indexExistente = materiasExistentes.indexOfFirst {
+                            (it["Materia"] as? String)?.equals(nombreNueva, ignoreCase = true) == true
+                        }
+
+                        if (indexExistente >= 0) {
+                            // Solo actualizar calificación
+                            val materiaActualizada = materiasExistentes[indexExistente].toMutableMap()
+                            materiaActualizada["Calificacion"] = nuevaCalificacion
+                            materiasExistentes[indexExistente] = materiaActualizada
+                        } else {
+                            // Si no existe, agregarla completa
+                            materiasExistentes.add(materiaNueva)
+                        }
+                    }
+
+                    db.collection("Tutorados").document(alumnoId)
+                        .update("materias", materiasExistentes)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Materias actualizadas/importadas", Toast.LENGTH_SHORT).show()
+                            cargarMaterias()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "No se pudo acceder al alumno", Toast.LENGTH_SHORT).show()
+                }
 
         } catch (e: Exception) {
             Toast.makeText(this, "Error al leer el archivo", Toast.LENGTH_SHORT).show()
@@ -163,10 +192,20 @@ class DetalleAlumno : AppCompatActivity() {
                 accion.setText(materia.accion)
                 motivo.visibility = View.VISIBLE
                 accion.visibility = View.VISIBLE
-                btnGuardar.visibility = View.VISIBLE
+
+                if (permitirEditarCampos) {
+                    motivo.isEnabled = true
+                    accion.isEnabled = true
+                    btnGuardar.visibility = View.VISIBLE
+                } else {
+                    motivo.isEnabled = false
+                    accion.isEnabled = false
+                    btnGuardar.visibility = View.GONE
+                }
             } else {
                 btnDesplegar.visibility = View.GONE
             }
+
 
             btnDesplegar.setOnClickListener {
                 layoutDetalles.visibility = if (layoutDetalles.isVisible) View.GONE else View.VISIBLE
@@ -207,7 +246,6 @@ class DetalleAlumno : AppCompatActivity() {
                         Toast.makeText(this, "No se pudo obtener el alumno", Toast.LENGTH_SHORT).show()
                     }
             }
-
 
             listaMaterias.addView(view)
         }
