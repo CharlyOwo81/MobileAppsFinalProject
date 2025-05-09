@@ -106,7 +106,7 @@ class AgregarAlumnoActivity : AppCompatActivity() {
         }
 
         val materias = mutableListOf<Map<String, Any>>()
-        for (i in 0 until contenedorMaterias.childCount - 1) {
+        for (i in 0 until contenedorMaterias.childCount) {
             val layout = contenedorMaterias.getChildAt(i) as LinearLayout
 
             val nombreMateria = (layout.getChildAt(0) as EditText).text.toString().trim()

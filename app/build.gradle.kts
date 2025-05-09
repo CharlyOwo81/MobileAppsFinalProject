@@ -39,7 +39,10 @@ android {
 dependencies {
     implementation("org.apache.poi:poi-ooxml:5.2.3")
     implementation(libs.androidx.core.ktx)
+    implementation (libs.androidx.core)
+    implementation (libs.androidx.core.ktx.v1120)
     implementation(libs.androidx.appcompat)
+    implementation("com.google.firebase:firebase-messaging:23.0.0")
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
@@ -48,6 +51,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-core:21.1.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

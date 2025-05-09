@@ -97,7 +97,7 @@ class RegistroDocente : AppCompatActivity() {
                         db.collection("Docentes").add(docente)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, ListaAlumnos::class.java)
+                                val intent = Intent(this, MainActivity::class.java)
                                 startActivity(intent)
                             }
                             .addOnFailureListener { e ->

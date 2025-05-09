@@ -33,7 +33,7 @@ class DetalleAlumno : AppCompatActivity() {
         val semestre = findViewById<TextView>(R.id.Semestre)
         listaMaterias = findViewById(R.id.listaMaterias)
         val btnImportar: Button = findViewById(R.id.btnImportarExcel)
-        permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
+         permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
 
         nombreEstudiante = intent.getStringExtra("nombre") ?: ""
         alumnoId = intent.getStringExtra("alumnoId") ?: ""
