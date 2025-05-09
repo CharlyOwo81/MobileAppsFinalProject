@@ -5,4 +5,7 @@
     <color name="deepFucsia">#D91656</color>
     <color name="purple">#640D5F</color>
     <color name="pink">#EE66A6</color>
+    <color name="tu_color_asesoria">#FFA500</color> <!-- naranja -->
+    <color name="tu_color_psicologia">#800080</color> <!-- morado -->
+    <color name="tu_color_ambas">#008000</color> <!-- verde -->
 </resources>

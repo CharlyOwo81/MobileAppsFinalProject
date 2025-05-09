@@ -3,10 +3,13 @@ package mx.edu.itson.Mentory
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.FirebaseApp
@@ -110,11 +113,28 @@ class ListaAlumnos : AppCompatActivity() {
                                     { ordenSemestres.indexOf(it.semestre) },
                                     { it.nombre }
                                 )))
-                                adapter = ArrayAdapter(
+                                adapter = object : ArrayAdapter<String>(
                                     this,
                                     android.R.layout.simple_list_item_1,
                                     alumnos.map { "${it.nombre} - ${it.semestre}" }
-                                )
+                                ) {
+                                    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                                        val view = super.getView(position, convertView, parent)
+                                        val alumno = alumnos[position]
+                                        val textView = view.findViewById<TextView>(android.R.id.text1) 
+
+                                        // Aquí decides el color según el campo 'color'
+                                        when (alumno.color) {
+                                            "Asesorías" -> textView.setTextColor(ContextCompat.getColor(context, R.color.tu_color_asesoria))
+                                            "Atención Psicológica" -> textView.setTextColor(ContextCompat.getColor(context, R.color.tu_color_psicologia))
+                                            "Ambas" -> textView.setTextColor(ContextCompat.getColor(context, R.color.tu_color_ambas))
+                                            else -> textView.setTextColor(ContextCompat.getColor(context, android.R.color.black))
+                                        }
+
+                                        return view
+                                    }
+                                }
+
                                 listaAlumnos.adapter = adapter
                             }
 
