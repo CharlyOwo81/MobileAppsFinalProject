@@ -2,9 +2,10 @@ package mx.edu.itson.Mentory
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AgregarAlumnoActivity : AppCompatActivity() {
@@ -18,6 +19,7 @@ class AgregarAlumnoActivity : AppCompatActivity() {
     lateinit var btnEliminarMateria: Button
 
     val db = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,12 +76,10 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             setBackgroundResource(R.drawable.edittext_background)
         }
 
-        // Campos ocultos (no añadidos visualmente)
         val calificacion = EditText(this)
         val accion = EditText(this)
         val motivo = EditText(this)
 
-        // Guardamos los campos ocultos como tag
         layoutMateria.addView(nombreMateria)
         layoutMateria.tag = listOf(calificacion, accion, motivo)
 
@@ -111,14 +111,11 @@ class AgregarAlumnoActivity : AppCompatActivity() {
         val materias = mutableListOf<Map<String, Any>>()
         for (i in 0 until contenedorMaterias.childCount) {
             val layout = contenedorMaterias.getChildAt(i) as LinearLayout
-
             val nombreMateria = (layout.getChildAt(0) as EditText).text.toString().trim()
             val (calificacionEditText, accionEditText, motivoEditText) = layout.tag as List<EditText>
-
             val calificacionStr = calificacionEditText.text.toString().trim()
             val accion = accionEditText.text.toString().trim()
             val motivo = motivoEditText.text.toString().trim()
-
             if (nombreMateria.isNotEmpty()) {
                 val calificacion = calificacionStr.toIntOrNull() ?: 0
                 materias.add(
@@ -132,50 +129,69 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             }
         }
 
-        val alumno = hashMapOf(
-            "nombre" to nombre,
-            "semestre" to semestre,
-            "color" to color,
-            "correo" to correoGenerado,
-            "contrasenia" to contraseniaGenerada,
-            "telefono" to "",
-            "materias" to materias
-        )
+        auth.createUserWithEmailAndPassword(correoGenerado, contraseniaGenerada)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val uid = auth.currentUser?.uid
+                    if (uid != null) {
+                        val alumno = hashMapOf(
+                            "nombre" to nombre,
+                            "semestre" to semestre,
+                            "color" to color,
+                            "correo" to correoGenerado,
+                            "contrasenia" to contraseniaGenerada,
+                            "telefono" to "",
+                            "materias" to materias
+                        )
 
-        val docenteId = intent.getStringExtra("docenteId")
-        val tutoradosIds = intent.getStringArrayListExtra("tutoradosIds") ?: arrayListOf()
+                        val docenteId = intent.getStringExtra("docenteId")
+                        val tutoradosIds = intent.getStringArrayListExtra("tutoradosIds") ?: arrayListOf()
 
-        db.collection("Tutorados").add(alumno)
-            .addOnSuccessListener { docRef ->
-                val nuevoId = docRef.id
-                tutoradosIds.add(nuevoId)
-
-                if (docenteId != null) {
-                    db.collection("Docentes").document(docenteId)
-                        .update("tutoradosImpartidos", tutoradosIds)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Alumno agregado y asignado al docente", Toast.LENGTH_SHORT).show()
-                            setResult(RESULT_OK)
-                            finish()
-                        }
-                        .addOnFailureListener {
-                            Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
-                        }
+                        db.collection("Tutorados").document(uid).set(alumno)
+                            .addOnSuccessListener {
+                                tutoradosIds.add(uid)
+                                if (docenteId != null) {
+                                    db.collection("Docentes").document(docenteId)
+                                        .update("tutoradosImpartidos", tutoradosIds)
+                                        .addOnSuccessListener {
+                                            mostrarDialogoCredenciales(correoGenerado, contraseniaGenerada)
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
+                                        }
+                                } else {
+                                    Toast.makeText(this, "No se pudo asignar al docente (docenteId nulo)", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this, "Error al guardar alumno en Firestore", Toast.LENGTH_SHORT).show()
+                            }
+                    }
                 } else {
-                    Toast.makeText(this, "No se pudo asignar al docente (docenteId nulo)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error al registrar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al guardar alumno", Toast.LENGTH_SHORT).show()
-            }
     }
+
+    private fun mostrarDialogoCredenciales(correo: String, contrasenia: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Credenciales generadas")
+            .setMessage("Correo: $correo\nContraseña: $contrasenia")
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss()
+                setResult(RESULT_OK)
+                finish()
+            }
+            .show()
+    }
+
     private fun generarCorreo(nombre: String): String {
         val nombreSinEspacios = nombre.replace("\\s+".toRegex(), "").lowercase()
         return "$nombreSinEspacios@gmail.com"
     }
 
     private fun generarContrasenia(): String {
-        val random = (1000..9999).random()
+        val random = (10000000..99999999).random()
         return "$random"
     }
 }

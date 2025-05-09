@@ -7,8 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegistroDocente : AppCompatActivity() {
@@ -20,6 +19,7 @@ class RegistroDocente : AppCompatActivity() {
     private lateinit var btnRegistrar: Button
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +44,11 @@ class RegistroDocente : AppCompatActivity() {
         val contrasenia = etContrasenia.text.toString().trim()
         val contraseniaConfirmar = etContraseniaConfirmar.text.toString().trim()
 
-        // Validar campos vacíos
         if (nombre.isEmpty() || correo.isEmpty() || telefono.isEmpty() || contrasenia.isEmpty() || contraseniaConfirmar.isEmpty()) {
             Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Validar contraseñas iguales
         if (contrasenia != contraseniaConfirmar) {
             Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
             return
@@ -60,56 +58,54 @@ class RegistroDocente : AppCompatActivity() {
             Toast.makeText(this, "El número de teléfono debe tener exactamente 10 dígitos", Toast.LENGTH_SHORT).show()
             return
         }
+
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
             Toast.makeText(this, "Por favor ingresa un correo electrónico válido", Toast.LENGTH_SHORT).show()
             return
         }
-        
-        // Revisar si el correo o teléfono ya existen
+
         db.collection("Docentes")
-            .whereEqualTo("correo", correo)
+            .whereEqualTo("telefono", telefono)
             .get()
-            .addOnSuccessListener { correoDocs ->
-                if (!correoDocs.isEmpty) {
-                    Toast.makeText(this, "El correo ya está registrado", Toast.LENGTH_SHORT).show()
+            .addOnSuccessListener { telefonoDocs ->
+                if (!telefonoDocs.isEmpty) {
+                    Toast.makeText(this, "El teléfono ya está registrado", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
 
-                db.collection("Docentes")
-                    .whereEqualTo("telefono", telefono)
-                    .get()
-                    .addOnSuccessListener { telefonoDocs ->
-                        if (!telefonoDocs.isEmpty) {
-                            Toast.makeText(this, "El teléfono ya está registrado", Toast.LENGTH_SHORT).show()
-                            return@addOnSuccessListener
+                auth.createUserWithEmailAndPassword(correo, contrasenia)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val uid = auth.currentUser?.uid
+
+                            if (uid != null) {
+                                val docente = hashMapOf(
+                                    "nombre" to nombre,
+                                    "correo" to correo,
+                                    "telefono" to telefono,
+                                    "tutoradosImpartidos" to arrayListOf<String>()
+                                )
+
+                                db.collection("Docentes").document(uid).set(docente)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                                        val intent = Intent(this, MainActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(this, "Error al guardar en Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else {
+                                Toast.makeText(this, "Error al obtener UID del usuario", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(this, "Error al registrar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                         }
-
-
-                        // Si pasa todas las validaciones, registrar
-                        val docente = hashMapOf(
-                            "nombre" to nombre,
-                            "correo" to correo,
-                            "telefono" to telefono,
-                            "contrasenia" to contrasenia,
-                            "tutoradosImpartidos" to arrayListOf<String>()
-                        )
-
-                        db.collection("Docentes").add(docente)
-                            .addOnSuccessListener {
-                                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(this, "Error al registrar: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Error al verificar teléfono: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Error al verificar correo: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error al verificar teléfono: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
