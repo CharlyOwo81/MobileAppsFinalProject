@@ -81,7 +81,7 @@ class DetalleAlumno : AppCompatActivity() {
                     materias.clear()
                     for (materiaInfo in materiasEnAlumno) {
                         val nombre = materiaInfo["Materia"] as? String ?: continue
-                        val calificacion = (materiaInfo["Calificacion"] as? Long)?.toInt() ?: 0
+                        val calificacion = (materiaInfo["Calificacion"] as? Number)?.toDouble() ?: 0.0
                         val motivo = materiaInfo["motivo"] as? String ?: ""
                         val accion = materiaInfo["accion"] as? String ?: ""
 
@@ -134,8 +134,8 @@ class DetalleAlumno : AppCompatActivity() {
                 materiasDesdeExcel.add(materia)
 
                 // Enviar notificación si la calificación es < 70
-                if (calificacion < 70) {
-                    enviarNotificacionEstudiante(alumnoId, nombre, calificacion)
+                if (calificacion < 7) {
+                    enviarNotificacionEstudiante(alumnoId,materias)
                 }
             }
 
@@ -182,19 +182,32 @@ class DetalleAlumno : AppCompatActivity() {
         }
     }
 
-    private fun enviarNotificacionEstudiante(alumnoId: String, materia: String, calificacion: Int) {
+    private fun enviarNotificacionEstudiante(alumnoId: String, materias: List<Materia>) {
+        val materiasReprobadas = materias.filter { it.calificacion < 7 }
+
+        if (materiasReprobadas.isEmpty()) {
+            Log.d("FCM", "Todas las materias están aprobadas.")
+            return
+        }
+
         db.collection("Estudiantes").document(alumnoId).get()
             .addOnSuccessListener { document ->
                 val fcmToken = document.getString("fcmToken") ?: return@addOnSuccessListener
+
+                val materiasTexto = materiasReprobadas.joinToString(", ") {
+                    "${it.nombre} (${it.calificacion.toInt()})"
+                }
+
                 val notification = mapOf(
                     "to" to fcmToken,
                     "notification" to mapOf(
-                        "title" to "¡Materia Reprobada!",
-                        "body" to "Tu calificación en $materia es $calificacion. Por favor, indica el motivo y acción en la app."
+                        "title" to "¡Materias Reprobadas!",
+                        "body" to "Has reprobado: $materiasTexto. Indica motivo y acción en la app."
                     )
                 )
+
                 Log.d("FCM", "Notificación preparada: $notification")
-                // TODO: Implementar envío con Volley o Firebase Cloud Functions
+                // TODO: Enviar usando Volley o una función de Firebase
             }
     }
 
@@ -239,7 +252,7 @@ class DetalleAlumno : AppCompatActivity() {
             nombreMateria.text = materia.nombre
             calificacion.text = "Calificación: ${materia.calificacion}"
 
-            if (materia.calificacion < 70) {
+            if (materia.calificacion < 7.0) {
                 materiasReprobadas.add(materia)
                 btnDesplegar.visibility = View.VISIBLE
                 motivo.visibility = View.VISIBLE
@@ -282,7 +295,7 @@ class DetalleAlumno : AppCompatActivity() {
                         db.collection("Tutorados").document(alumnoId)
                             .update("materias", materiaActualizada)
                             .addOnSuccessListener {
-                                Toast.makeText(this, "Cambios guardados, ¡fierce!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
                                 layoutDetalles.visibility = View.GONE
                                 materia.motivo = nuevoMotivo
                                 materia.accion = nuevaAccion
