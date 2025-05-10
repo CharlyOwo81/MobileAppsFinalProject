@@ -73,17 +73,16 @@
                 android:visibility="gone"
                 android:layout_marginBottom="4dp" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/Motivo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/detail_edittext_background"
                 android:padding="12dp"
-                android:textSize="14sp"
                 android:textColor="#640D5F"
-                android:textColorHint="#EE66A6"
-                android:layout_marginBottom="12dp"
-                android:visibility="visible" />
+                android:entries="@array/motivo_opciones"
+            android:layout_marginBottom="12dp"
+            android:visibility="visible" />
 
             <TextView
                 android:id="@+id/labelAccion"
@@ -96,17 +95,15 @@
                 android:visibility="gone"
                 android:layout_marginBottom="4dp" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/Accion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/detail_edittext_background"
                 android:padding="12dp"
-                android:textSize="14sp"
                 android:textColor="#640D5F"
-                android:textColorHint="#EE66A6"
-                android:visibility="visible" />
-
+                android:entries="@array/accion_opciones"
+            android:visibility="visible" />
             <Button
                 android:id="@+id/btnGuardar"
                 android:layout_width="wrap_content"

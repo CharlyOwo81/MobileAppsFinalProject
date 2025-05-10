@@ -70,7 +70,6 @@ class DetalleAlumno : AppCompatActivity() {
                         val motivo = materiaInfo["motivo"] as? String ?: ""
                         val accion = materiaInfo["accion"] as? String ?: ""
 
-                        // Se usa el nombre como ID ya que no hay campo materiaId
                         materias.add(Materia(nombre, calificacion, motivo, accion, nombre))
                     }
                     mostrarMaterias()
@@ -128,7 +127,9 @@ class DetalleAlumno : AppCompatActivity() {
 
             db.collection("Tutorados").document(alumnoId).get()
                 .addOnSuccessListener { document ->
-                    val materiasExistentes = (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+                    val materiasExistentes =
+                        (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList()
+                            ?: mutableListOf()
 
                     for (materiaNueva in materiasDesdeExcel) {
                         val nombreNueva = materiaNueva["Materia"] as String
@@ -136,12 +137,16 @@ class DetalleAlumno : AppCompatActivity() {
 
                         // Buscar si ya existe una materia con el mismo nombre
                         val indexExistente = materiasExistentes.indexOfFirst {
-                            (it["Materia"] as? String)?.equals(nombreNueva, ignoreCase = true) == true
+                            (it["Materia"] as? String)?.equals(
+                                nombreNueva,
+                                ignoreCase = true
+                            ) == true
                         }
 
                         if (indexExistente >= 0) {
                             // Solo actualizar calificación
-                            val materiaActualizada = materiasExistentes[indexExistente].toMutableMap()
+                            val materiaActualizada =
+                                materiasExistentes[indexExistente].toMutableMap()
                             materiaActualizada["Calificacion"] = nuevaCalificacion
                             materiasExistentes[indexExistente] = materiaActualizada
                         } else {
@@ -153,11 +158,16 @@ class DetalleAlumno : AppCompatActivity() {
                     db.collection("Tutorados").document(alumnoId)
                         .update("materias", materiasExistentes)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Materias actualizadas/importadas", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Materias actualizadas/importadas",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             cargarMaterias()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT)
+                                .show()
                         }
                 }
                 .addOnFailureListener {
@@ -169,7 +179,6 @@ class DetalleAlumno : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
     private fun mostrarMaterias() {
         listaMaterias.removeAllViews()
         for (materia in materias) {
@@ -179,52 +188,67 @@ class DetalleAlumno : AppCompatActivity() {
             val calificacion: TextView = view.findViewById(R.id.Calificacion)
             val btnDesplegar: ImageButton = view.findViewById(R.id.btnDesplegar)
             val layoutDetalles: LinearLayout = view.findViewById(R.id.layoutDetalles)
-            val motivo: EditText = view.findViewById(R.id.Motivo)
-            val accion: EditText = view.findViewById(R.id.Accion)
+            val motivo: Spinner = view.findViewById(R.id.Motivo)
+            val accion: Spinner = view.findViewById(R.id.Accion)
             val btnGuardar: Button = view.findViewById(R.id.btnGuardar)
             val labelMotivo: TextView = view.findViewById(R.id.labelMotivo)
             val labelAccion: TextView = view.findViewById(R.id.labelAccion)
+
+            // Configurar Spinner Motivo
+            ArrayAdapter.createFromResource(
+                this,
+                R.array.motivo_opciones,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                motivo.adapter = adapter
+                motivo.setSelection(adapter.getPosition(materia.motivo))
+            }
+
+            // Configurar Spinner Acción
+            ArrayAdapter.createFromResource(
+                this,
+                R.array.accion_opciones,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                accion.adapter = adapter
+                accion.setSelection(adapter.getPosition(materia.accion))
+            }
 
             nombreMateria.text = materia.nombre
             calificacion.text = "Calificación: ${materia.calificacion}"
 
             if (materia.calificacion < 70) {
                 btnDesplegar.visibility = View.VISIBLE
-                motivo.setText(materia.motivo)
-                accion.setText(materia.accion)
                 motivo.visibility = View.VISIBLE
                 accion.visibility = View.VISIBLE
                 labelMotivo.visibility = View.VISIBLE
                 labelAccion.visibility = View.VISIBLE
-                if (permitirEditarCampos) {
-                    motivo.isEnabled = true  // Campos editables para el estudiante
-                    accion.isEnabled = true
-                    btnGuardar.visibility = View.VISIBLE
-                } else {
-                    motivo.isEnabled = false  // Campos no editables para el docente
-                    accion.isEnabled = false
-                    btnGuardar.visibility = View.GONE  // No hay botón de guardar
-                }
+
+                motivo.isEnabled = permitirEditarCampos
+                accion.isEnabled = permitirEditarCampos
+                btnGuardar.visibility = if (permitirEditarCampos) View.VISIBLE else View.GONE
             } else {
                 btnDesplegar.visibility = View.GONE
+                motivo.visibility = View.GONE
+                accion.visibility = View.GONE
+                labelMotivo.visibility = View.GONE
+                labelAccion.visibility = View.GONE
             }
-
-
-
 
             btnDesplegar.setOnClickListener {
                 layoutDetalles.visibility = if (layoutDetalles.isVisible) View.GONE else View.VISIBLE
             }
 
             btnGuardar.setOnClickListener {
-                val nuevoMotivo = motivo.text.toString()
-                val nuevaAccion = accion.text.toString()
+                val nuevoMotivo = motivo.selectedItem.toString()
+                val nuevaAccion = accion.selectedItem.toString()
 
                 db.collection("Tutorados").document(alumnoId).get()
                     .addOnSuccessListener { document ->
                         val materiasArray = document.get("materias") as? MutableList<Map<String, Any>> ?: return@addOnSuccessListener
 
-                        // Busca la materia por el nombre o el campo identificador adecuado
                         val materiaActualizada = materiasArray.map {
                             if ((it["Materia"] as? String)?.equals(materia.nombre, ignoreCase = true) == true) {
                                 it.toMutableMap().apply {
@@ -236,22 +260,20 @@ class DetalleAlumno : AppCompatActivity() {
                             }
                         }
 
-                        // Actualiza el array completo en Firestore
                         db.collection("Tutorados").document(alumnoId)
                             .update("materias", materiaActualizada)
                             .addOnSuccessListener {
                                 Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
                                 layoutDetalles.visibility = View.GONE
+                                // Actualizar el objeto local
+                                materia.motivo = nuevoMotivo
+                                materia.accion = nuevaAccion
                             }
                             .addOnFailureListener {
-                                Toast.makeText(this, "Error al guardar cambios", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Oops, algo salió mal", Toast.LENGTH_SHORT).show()
                             }
                     }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "No se pudo obtener el alumno", Toast.LENGTH_SHORT).show()
-                    }
             }
-
 
             listaMaterias.addView(view)
         }

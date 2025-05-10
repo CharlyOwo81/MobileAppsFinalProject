@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Mentory</string>
+
+    <string-array name="motivo_opciones">
+        <item>Falta de asistencia</item>
+        <item>Bajo rendimiento</item>
+        <item>No entregó proyectos</item>
+        <item>Copió en el examen</item>
+        <item>No participó en clases</item>
+        <item>Reprobó exámenes parciales</item>
+        <item>Problemas de conducta</item>
+    </string-array>
+
+    <string-array name="accion_opciones">
+        <item>Examen extraordinario</item>
+        <item>Curso de regularización</item>
+        <item>Tutorías personalizadas</item>
+        <item>Repetir la materia</item>
+        <item>Asesoría psicológica</item>
+    </string-array>
 </resources>
