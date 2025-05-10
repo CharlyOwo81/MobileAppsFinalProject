@@ -18,4 +18,8 @@
         <item>Repetir la materia</item>
         <item>Asesoría psicológica</item>
     </string-array>
+    <string name="placeholder_motivo">Motivo sin asignar</string>
+    <string name="placeholder_accion">Acción sin asignar</string>
+    <string name="selecciona_motivo">Selecciona motivo</string>
+    <string name="selecciona_accion">Selecciona acción</string>
 </resources>

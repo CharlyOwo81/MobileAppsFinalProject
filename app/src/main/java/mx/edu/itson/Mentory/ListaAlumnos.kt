@@ -49,6 +49,7 @@ class ListaAlumnos : AppCompatActivity() {
             intent.putExtra("nombre", alumnos[position].nombre)
             intent.putExtra("semestre", alumnos[position].semestre)
             intent.putExtra("permitirEditarCampos", false)
+            intent.putExtra("permitirCerrarSesion", false)
             startActivity(intent)
         }
 

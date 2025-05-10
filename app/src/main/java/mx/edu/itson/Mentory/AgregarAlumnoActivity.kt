@@ -7,6 +7,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.content.ClipData
+import android.content.ClipboardManager
 
 class AgregarAlumnoActivity : AppCompatActivity() {
 
@@ -105,90 +107,152 @@ class AgregarAlumnoActivity : AppCompatActivity() {
             return
         }
 
-        val correoGenerado = generarCorreo(nombre)
-        val contraseniaGenerada = generarContrasenia()
+        generarCorreoUnico(nombre) { correoGenerado ->
+            val contraseniaGenerada = generarContrasenia()
 
-        val materias = mutableListOf<Map<String, Any>>()
-        for (i in 0 until contenedorMaterias.childCount) {
-            val layout = contenedorMaterias.getChildAt(i) as LinearLayout
-            val nombreMateria = (layout.getChildAt(0) as EditText).text.toString().trim()
-            val (calificacionEditText, accionEditText, motivoEditText) = layout.tag as List<EditText>
-            val calificacionStr = calificacionEditText.text.toString().trim()
-            val accion = accionEditText.text.toString().trim()
-            val motivo = motivoEditText.text.toString().trim()
-            if (nombreMateria.isNotEmpty()) {
-                val calificacion = calificacionStr.toIntOrNull() ?: 0
-                materias.add(
-                    mapOf(
-                        "Materia" to nombreMateria,
-                        "Calificacion" to calificacion,
-                        "accion" to accion,
-                        "motivo" to motivo
-                    )
-                )
-            }
-        }
-
-        auth.createUserWithEmailAndPassword(correoGenerado, contraseniaGenerada)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val uid = auth.currentUser?.uid
-                    if (uid != null) {
-                        val alumno = hashMapOf(
-                            "nombre" to nombre,
-                            "semestre" to semestre,
-                            "color" to color,
-                            "correo" to correoGenerado,
-                            "contrasenia" to contraseniaGenerada,
-                            "telefono" to "",
-                            "materias" to materias
+            val materias = mutableListOf<Map<String, Any>>()
+            for (i in 0 until contenedorMaterias.childCount) {
+                val layout = contenedorMaterias.getChildAt(i) as LinearLayout
+                val nombreMateria = (layout.getChildAt(0) as EditText).text.toString().trim()
+                val (calificacionEditText, accionEditText, motivoEditText) = layout.tag as List<EditText>
+                val calificacionStr = calificacionEditText.text.toString().trim()
+                val accion = accionEditText.text.toString().trim()
+                val motivo = motivoEditText.text.toString().trim()
+                if (nombreMateria.isNotEmpty()) {
+                    val calificacion = calificacionStr.toIntOrNull() ?: 0
+                    materias.add(
+                        mapOf(
+                            "Materia" to nombreMateria,
+                            "Calificacion" to calificacion,
+                            "accion" to accion,
+                            "motivo" to motivo
                         )
-
-                        val docenteId = intent.getStringExtra("docenteId")
-                        val tutoradosIds = intent.getStringArrayListExtra("tutoradosIds") ?: arrayListOf()
-
-                        db.collection("Tutorados").document(uid).set(alumno)
-                            .addOnSuccessListener {
-                                tutoradosIds.add(uid)
-                                if (docenteId != null) {
-                                    db.collection("Docentes").document(docenteId)
-                                        .update("tutoradosImpartidos", tutoradosIds)
-                                        .addOnSuccessListener {
-                                            mostrarDialogoCredenciales(correoGenerado, contraseniaGenerada)
-                                        }
-                                        .addOnFailureListener {
-                                            Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
-                                        }
-                                } else {
-                                    Toast.makeText(this, "No se pudo asignar al docente (docenteId nulo)", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this, "Error al guardar alumno en Firestore", Toast.LENGTH_SHORT).show()
-                            }
-                    }
-                } else {
-                    Toast.makeText(this, "Error al registrar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    )
                 }
             }
+
+            auth.createUserWithEmailAndPassword(correoGenerado, contraseniaGenerada)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val uid = auth.currentUser?.uid
+                        if (uid != null) {
+                            val alumno = hashMapOf(
+                                "nombre" to nombre,
+                                "semestre" to semestre,
+                                "color" to color,
+                                "correo" to correoGenerado,
+                                "contrasenia" to contraseniaGenerada,
+                                "telefono" to "",
+                                "materias" to materias
+                            )
+
+                            val docenteId = intent.getStringExtra("docenteId")
+                            val tutoradosIds = intent.getStringArrayListExtra("tutoradosIds") ?: arrayListOf()
+
+                            db.collection("Tutorados").document(uid).set(alumno)
+                                .addOnSuccessListener {
+                                    tutoradosIds.add(uid)
+                                    if (docenteId != null) {
+                                        db.collection("Docentes").document(docenteId)
+                                            .update("tutoradosImpartidos", tutoradosIds)
+                                            .addOnSuccessListener {
+                                                mostrarDialogoCredenciales(correoGenerado, contraseniaGenerada)
+                                            }
+                                            .addOnFailureListener {
+                                                Toast.makeText(this, "Error al asignar alumno al docente", Toast.LENGTH_SHORT).show()
+                                            }
+                                    } else {
+                                        Toast.makeText(this, "No se pudo asignar al docente (docenteId nulo)", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(this, "Error al guardar alumno en Firestore", Toast.LENGTH_SHORT).show()
+                                }
+                        }
+                    } else {
+                        Toast.makeText(this, "Error al registrar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        }
     }
 
     private fun mostrarDialogoCredenciales(correo: String, contrasenia: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Credenciales generadas")
-            .setMessage("Correo: $correo\nContraseña: $contrasenia")
-            .setPositiveButton("Aceptar") { dialog, _ ->
+        val dialog = AlertDialog.Builder(this).create()
+        dialog.setTitle("Credenciales generadas")
+
+        val layoutBotones = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(50, 20, 50, 20)
+            gravity = android.view.Gravity.END
+        }
+
+        val btnCopiar = TextView(this).apply {
+            text = "Copiar"
+            setTextColor(Color.BLUE)
+            textSize = 16f
+            setPadding(20, 0, 20, 0)
+            setOnClickListener {
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("Credenciales", "Correo: $correo\nContraseña: $contrasenia")
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this@AgregarAlumnoActivity, "Credenciales copiadas al portapapeles", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val btnAceptar = TextView(this).apply {
+            text = "Aceptar"
+            setTextColor(Color.BLUE)
+            textSize = 16f
+            setPadding(20, 0, 20, 0)
+            setOnClickListener {
                 dialog.dismiss()
                 setResult(RESULT_OK)
                 finish()
             }
-            .show()
+        }
+
+        layoutBotones.addView(btnCopiar)
+        layoutBotones.addView(btnAceptar)
+
+        val contentLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(TextView(this@AgregarAlumnoActivity).apply {
+                text = "Correo: $correo\nContraseña: $contrasenia"
+                setPadding(50, 40, 50, 20)
+                textSize = 16f
+            })
+            addView(layoutBotones)
+        }
+
+        dialog.setView(contentLayout)
+        dialog.show()
     }
 
-    private fun generarCorreo(nombre: String): String {
-        val nombreSinEspacios = nombre.replace("\\s+".toRegex(), "").lowercase()
-        return "$nombreSinEspacios@gmail.com"
+    private fun generarCorreoUnico(nombre: String, callback: (String) -> Unit) {
+        val base = nombre.replace("\\s+".toRegex(), "").lowercase()
+        val dominio = "@gmail.com"
+
+        val usuariosRef = db.collection("Tutorados")
+        var intento = 0
+
+        fun verificarCorreoDisponible(correo: String) {
+            usuariosRef.whereEqualTo("correo", correo).get()
+                .addOnSuccessListener { result ->
+                    if (result.isEmpty) {
+                        callback(correo)
+                    } else {
+                        intento++
+                        verificarCorreoDisponible("$base$intento$dominio")
+                    }
+                }
+                .addOnFailureListener {
+                    callback("$base${System.currentTimeMillis()}$dominio") // fallback
+                }
+        }
+
+        verificarCorreoDisponible("$base$dominio")
     }
+
 
     private fun generarContrasenia(): String {
         val random = (10000000..99999999).random()

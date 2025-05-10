@@ -88,22 +88,51 @@
             android:elevation="4dp"/>
     </ScrollView>
 
-    <!-- Botón fuera del ScrollView -->
-    <Button
-        android:id="@+id/btnImportarExcel"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Importar Excel"
-        android:textSize="18sp"
-        android:textAllCaps="false"
-        android:background="@drawable/button_background"
-        android:textColor="#FFFFFF"
-        android:drawableStart="@drawable/add_24px"
-        android:drawableTint="#FFCA28"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:layout_gravity="end"
+        android:orientation="horizontal"
         android:layout_margin="16dp"
-        android:elevation="8dp"
-        app:backgroundTint="@null"/>
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrar Sesión"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF"
+            android:drawableStart="@drawable/add_24px"
+            android:drawableTint="#FFCA28"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:layout_weight="1"
+            android:layout_gravity="start"
+            app:backgroundTint="@null" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="6" />
+
+        <Button
+            android:id="@+id/btnImportarExcel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Importar Excel"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_background"
+            android:textColor="#FFFFFF"
+            android:drawableStart="@drawable/add_24px"
+            android:drawableTint="#FFCA28"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            app:backgroundTint="@null" />
+    </LinearLayout>
+
 </LinearLayout>

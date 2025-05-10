@@ -2,15 +2,15 @@ package mx.edu.itson.Mentory
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegistroDocente : AppCompatActivity() {
+
     private lateinit var etNombre: EditText
     private lateinit var etCorreo: EditText
     private lateinit var etTelefono: EditText
@@ -49,35 +49,41 @@ class RegistroDocente : AppCompatActivity() {
             return
         }
 
-        if (contrasenia != contraseniaConfirmar) {
-            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            etCorreo.error = "Correo inválido"
             return
         }
 
         if (telefono.length != 10 || !telefono.all { it.isDigit() }) {
-            Toast.makeText(this, "El número de teléfono debe tener exactamente 10 dígitos", Toast.LENGTH_SHORT).show()
+            etTelefono.error = "El teléfono debe tener exactamente 10 dígitos"
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            Toast.makeText(this, "Por favor ingresa un correo electrónico válido", Toast.LENGTH_SHORT).show()
+        if (contrasenia.length < 6) {
+            etContrasenia.error = "La contraseña debe tener al menos 6 caracteres"
             return
         }
 
+        if (contrasenia != contraseniaConfirmar) {
+            etContraseniaConfirmar.error = "Las contraseñas no coinciden"
+            return
+        }
+
+        // Verifica si el teléfono ya está registrado
         db.collection("Docentes")
             .whereEqualTo("telefono", telefono)
             .get()
             .addOnSuccessListener { telefonoDocs ->
                 if (!telefonoDocs.isEmpty) {
-                    Toast.makeText(this, "El teléfono ya está registrado", Toast.LENGTH_SHORT).show()
+                    etTelefono.error = "Este número ya está registrado"
                     return@addOnSuccessListener
                 }
 
+                // Intenta registrar el usuario
                 auth.createUserWithEmailAndPassword(correo, contrasenia)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val uid = auth.currentUser?.uid
-
                             if (uid != null) {
                                 val docente = hashMapOf(
                                     "nombre" to nombre,
@@ -89,8 +95,7 @@ class RegistroDocente : AppCompatActivity() {
                                 db.collection("Docentes").document(uid).set(docente)
                                     .addOnSuccessListener {
                                         Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this, MainActivity::class.java)
-                                        startActivity(intent)
+                                        startActivity(Intent(this, MainActivity::class.java))
                                         finish()
                                     }
                                     .addOnFailureListener { e ->
@@ -100,7 +105,11 @@ class RegistroDocente : AppCompatActivity() {
                                 Toast.makeText(this, "Error al obtener UID del usuario", Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            Toast.makeText(this, "Error al registrar usuario: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            if (task.exception is FirebaseAuthUserCollisionException) {
+                                etCorreo.error = "Este correo ya está registrado"
+                            } else {
+                                Toast.makeText(this, "Error al registrar: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
             }

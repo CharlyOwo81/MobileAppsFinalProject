@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
                                         intent.putExtra("docenteId", docenteDoc.id)
                                         intent.putStringArrayListExtra("tutoradosIds", tutoradosIds)
                                         intent.putExtra("permitirEditarCampos", false)
+                                        intent.putExtra("permitirCerrarSesion", false)
                                         startActivity(intent)
                                     } else {
                                         // 🔥 CAMBIO → Si no es Docente, buscamos en Tutorados

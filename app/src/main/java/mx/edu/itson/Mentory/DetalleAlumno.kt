@@ -37,12 +37,14 @@ class DetalleAlumno : AppCompatActivity() {
         val semestre = findViewById<TextView>(R.id.Semestre)
         listaMaterias = findViewById(R.id.listaMaterias)
         val btnImportar: Button = findViewById(R.id.btnImportarExcel)
+        val btnCerrarSesion:Button = findViewById(R.id.btnCerrarSesion)
         permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
 
         nombreEstudiante = intent.getStringExtra("nombre") ?: ""
         alumnoId = intent.getStringExtra("alumnoId") ?: ""
         val semestreEstudiante = intent.getStringExtra("semestre") ?: ""
         val permitirImportar = intent.getBooleanExtra("permitirImportar", true)
+        val permitirCerrar = intent.getBooleanExtra("permitirCerrarSesion", true)
 
         nombre.text = nombreEstudiante
         semestre.text = semestreEstudiante
@@ -63,7 +65,14 @@ class DetalleAlumno : AppCompatActivity() {
         } else {
             btnImportar.setOnClickListener { seleccionarArchivoExcel() }
         }
-
+        if (!permitirCerrar) {
+            btnCerrarSesion.visibility = View.GONE
+        } else {
+            btnCerrarSesion.setOnClickListener {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+        }
         cargarMaterias()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
