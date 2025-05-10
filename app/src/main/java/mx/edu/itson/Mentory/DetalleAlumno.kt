@@ -2,12 +2,15 @@ package mx.edu.itson.Mentory
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -24,6 +27,7 @@ class DetalleAlumno : AppCompatActivity() {
     private lateinit var nombreEstudiante: String
     private lateinit var alumnoId: String
     private var permitirEditarCampos: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -33,7 +37,7 @@ class DetalleAlumno : AppCompatActivity() {
         val semestre = findViewById<TextView>(R.id.Semestre)
         listaMaterias = findViewById(R.id.listaMaterias)
         val btnImportar: Button = findViewById(R.id.btnImportarExcel)
-         permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
+        permitirEditarCampos = intent.getBooleanExtra("permitirEditarCampos", true)
 
         nombreEstudiante = intent.getStringExtra("nombre") ?: ""
         alumnoId = intent.getStringExtra("alumnoId") ?: ""
@@ -42,6 +46,17 @@ class DetalleAlumno : AppCompatActivity() {
 
         nombre.text = nombreEstudiante
         semestre.text = semestreEstudiante
+
+        // Verificar acciones especiales y cambiar color del nombre
+        db.collection("Tutorados").document(alumnoId).get()
+            .addOnSuccessListener { document ->
+                val accionesEspeciales = document.get("accionesEspeciales") as? List<String> ?: emptyList()
+                when {
+                    "Asesorias" in accionesEspeciales -> nombre.setTextColor(Color.parseColor("#D91656")) // Rosa fierc
+                    "AtencionPsicologica" in accionesEspeciales -> nombre.setTextColor(Color.parseColor("#640D5F")) // Morado elegante
+                    else -> nombre.setTextColor(Color.BLACK)
+                }
+            }
 
         if (!permitirImportar) {
             btnImportar.visibility = View.GONE
@@ -101,12 +116,10 @@ class DetalleAlumno : AppCompatActivity() {
             val inputStream: InputStream? = contentResolver.openInputStream(uri)
             val workbook = XSSFWorkbook(inputStream)
             val sheet = workbook.getSheetAt(0)
-
             val materiasDesdeExcel = mutableListOf<Map<String, Any>>()
 
             for (i in 1 until sheet.physicalNumberOfRows) {
                 val row = sheet.getRow(i) ?: continue
-
                 val nombre = row.getCell(0)?.toString()?.trim() ?: continue
                 val calificacion = row.getCell(1)?.numericCellValue?.toInt() ?: 0
                 val motivo = row.getCell(2)?.toString()?.trim() ?: ""
@@ -118,8 +131,12 @@ class DetalleAlumno : AppCompatActivity() {
                     "motivo" to motivo,
                     "accion" to accion
                 )
-
                 materiasDesdeExcel.add(materia)
+
+                // Enviar notificación si la calificación es < 70
+                if (calificacion < 70) {
+                    enviarNotificacionEstudiante(alumnoId, nombre, calificacion)
+                }
             }
 
             workbook.close()
@@ -127,30 +144,21 @@ class DetalleAlumno : AppCompatActivity() {
 
             db.collection("Tutorados").document(alumnoId).get()
                 .addOnSuccessListener { document ->
-                    val materiasExistentes =
-                        (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList()
-                            ?: mutableListOf()
+                    val materiasExistentes = (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
 
                     for (materiaNueva in materiasDesdeExcel) {
                         val nombreNueva = materiaNueva["Materia"] as String
                         val nuevaCalificacion = materiaNueva["Calificacion"]!!
 
-                        // Buscar si ya existe una materia con el mismo nombre
                         val indexExistente = materiasExistentes.indexOfFirst {
-                            (it["Materia"] as? String)?.equals(
-                                nombreNueva,
-                                ignoreCase = true
-                            ) == true
+                            (it["Materia"] as? String)?.equals(nombreNueva, ignoreCase = true) == true
                         }
 
                         if (indexExistente >= 0) {
-                            // Solo actualizar calificación
-                            val materiaActualizada =
-                                materiasExistentes[indexExistente].toMutableMap()
+                            val materiaActualizada = materiasExistentes[indexExistente].toMutableMap()
                             materiaActualizada["Calificacion"] = nuevaCalificacion
                             materiasExistentes[indexExistente] = materiaActualizada
                         } else {
-                            // Si no existe, agregarla completa
                             materiasExistentes.add(materiaNueva)
                         }
                     }
@@ -158,32 +166,44 @@ class DetalleAlumno : AppCompatActivity() {
                     db.collection("Tutorados").document(alumnoId)
                         .update("materias", materiasExistentes)
                         .addOnSuccessListener {
-                            Toast.makeText(
-                                this,
-                                "Materias actualizadas/importadas",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this, "Materias actualizadas/importadas", Toast.LENGTH_SHORT).show()
                             cargarMaterias()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT).show()
                         }
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "No se pudo acceder al alumno", Toast.LENGTH_SHORT).show()
                 }
-
         } catch (e: Exception) {
             Toast.makeText(this, "Error al leer el archivo", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
         }
     }
+
+    private fun enviarNotificacionEstudiante(alumnoId: String, materia: String, calificacion: Int) {
+        db.collection("Estudiantes").document(alumnoId).get()
+            .addOnSuccessListener { document ->
+                val fcmToken = document.getString("fcmToken") ?: return@addOnSuccessListener
+                val notification = mapOf(
+                    "to" to fcmToken,
+                    "notification" to mapOf(
+                        "title" to "¡Materia Reprobada!",
+                        "body" to "Tu calificación en $materia es $calificacion. Por favor, indica el motivo y acción en la app."
+                    )
+                )
+                Log.d("FCM", "Notificación preparada: $notification")
+                // TODO: Implementar envío con Volley o Firebase Cloud Functions
+            }
+    }
+
     private fun mostrarMaterias() {
         listaMaterias.removeAllViews()
+        val materiasReprobadas = mutableListOf<Materia>()
+
         for (materia in materias) {
             val view = layoutInflater.inflate(R.layout.item_materia, listaMaterias, false)
-
             val nombreMateria: TextView = view.findViewById(R.id.Materia)
             val calificacion: TextView = view.findViewById(R.id.Calificacion)
             val btnDesplegar: ImageButton = view.findViewById(R.id.btnDesplegar)
@@ -220,12 +240,12 @@ class DetalleAlumno : AppCompatActivity() {
             calificacion.text = "Calificación: ${materia.calificacion}"
 
             if (materia.calificacion < 70) {
+                materiasReprobadas.add(materia)
                 btnDesplegar.visibility = View.VISIBLE
                 motivo.visibility = View.VISIBLE
                 accion.visibility = View.VISIBLE
                 labelMotivo.visibility = View.VISIBLE
                 labelAccion.visibility = View.VISIBLE
-
                 motivo.isEnabled = permitirEditarCampos
                 accion.isEnabled = permitirEditarCampos
                 btnGuardar.visibility = if (permitirEditarCampos) View.VISIBLE else View.GONE
@@ -248,7 +268,6 @@ class DetalleAlumno : AppCompatActivity() {
                 db.collection("Tutorados").document(alumnoId).get()
                     .addOnSuccessListener { document ->
                         val materiasArray = document.get("materias") as? MutableList<Map<String, Any>> ?: return@addOnSuccessListener
-
                         val materiaActualizada = materiasArray.map {
                             if ((it["Materia"] as? String)?.equals(materia.nombre, ignoreCase = true) == true) {
                                 it.toMutableMap().apply {
@@ -263,9 +282,8 @@ class DetalleAlumno : AppCompatActivity() {
                         db.collection("Tutorados").document(alumnoId)
                             .update("materias", materiaActualizada)
                             .addOnSuccessListener {
-                                Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Cambios guardados, ¡fierce!", Toast.LENGTH_SHORT).show()
                                 layoutDetalles.visibility = View.GONE
-                                // Actualizar el objeto local
                                 materia.motivo = nuevoMotivo
                                 materia.accion = nuevaAccion
                             }
@@ -276,6 +294,18 @@ class DetalleAlumno : AppCompatActivity() {
             }
 
             listaMaterias.addView(view)
+        }
+
+        // Mostrar alerta si hay materias reprobadas
+        if (materiasReprobadas.isNotEmpty()) {
+            val mensaje = "${nombreEstudiante} tiene ${materiasReprobadas.size} materia(s) reprobada(s):\n" +
+                    materiasReprobadas.joinToString("\n") { "${it.nombre}: ${it.calificacion}" }
+            AlertDialog.Builder(this)
+                .setTitle("¡Aviso!")
+                .setMessage(mensaje)
+                .setPositiveButton("Entendido") { _, _ -> }
+                .setIcon(android.R.drawable.ic_dialog_alert) // Usar ícono por defecto
+                .show()
         }
     }
 }
