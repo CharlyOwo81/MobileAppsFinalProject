@@ -121,7 +121,7 @@ class DetalleAlumno : AppCompatActivity() {
             for (i in 1 until sheet.physicalNumberOfRows) {
                 val row = sheet.getRow(i) ?: continue
                 val nombre = row.getCell(0)?.toString()?.trim() ?: continue
-                val calificacion = row.getCell(1)?.numericCellValue?.toInt() ?: 0
+                val calificacion = row.getCell(1)?.numericCellValue?.toDouble() ?: 0.0
                 val motivo = row.getCell(2)?.toString()?.trim() ?: ""
                 val accion = row.getCell(3)?.toString()?.trim() ?: ""
 
@@ -132,11 +132,6 @@ class DetalleAlumno : AppCompatActivity() {
                     "accion" to accion
                 )
                 materiasDesdeExcel.add(materia)
-
-                // Enviar notificación si la calificación es < 70
-                if (calificacion < 7) {
-                    enviarNotificacionEstudiante(alumnoId,materias)
-                }
             }
 
             workbook.close()
@@ -144,20 +139,19 @@ class DetalleAlumno : AppCompatActivity() {
 
             db.collection("Tutorados").document(alumnoId).get()
                 .addOnSuccessListener { document ->
-                    val materiasExistentes = (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList() ?: mutableListOf()
+                    val materiasExistentes = (document.get("materias") as? MutableList<Map<String, Any>>)?.toMutableList()
+                        ?: mutableListOf()
 
                     for (materiaNueva in materiasDesdeExcel) {
                         val nombreNueva = materiaNueva["Materia"] as String
-                        val nuevaCalificacion = materiaNueva["Calificacion"]!!
 
                         val indexExistente = materiasExistentes.indexOfFirst {
                             (it["Materia"] as? String)?.equals(nombreNueva, ignoreCase = true) == true
                         }
 
                         if (indexExistente >= 0) {
-                            val materiaActualizada = materiasExistentes[indexExistente].toMutableMap()
-                            materiaActualizada["Calificacion"] = nuevaCalificacion
-                            materiasExistentes[indexExistente] = materiaActualizada
+                            // Reemplaza completamente con la nueva información
+                            materiasExistentes[indexExistente] = materiaNueva
                         } else {
                             materiasExistentes.add(materiaNueva)
                         }
@@ -167,7 +161,22 @@ class DetalleAlumno : AppCompatActivity() {
                         .update("materias", materiasExistentes)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Materias actualizadas/importadas", Toast.LENGTH_SHORT).show()
-                            cargarMaterias()
+
+                            // Actualizar lista local y mostrar de inmediato
+                            materias.clear()
+                            for (materiaInfo in materiasExistentes) {
+                                val nombre = materiaInfo["Materia"] as? String ?: continue
+                                val calificacion = (materiaInfo["Calificacion"] as? Number)?.toDouble() ?: 0.0
+                                val motivo = materiaInfo["motivo"] as? String ?: ""
+                                val accion = materiaInfo["accion"] as? String ?: ""
+
+                                materias.add(Materia(nombre, calificacion, motivo, accion, nombre))
+                            }
+
+                            mostrarMaterias()
+
+                            // Notificación solo para reprobadas
+                            enviarNotificacionEstudiante(alumnoId, materias)
                         }
                         .addOnFailureListener {
                             Toast.makeText(this, "Error al guardar materias", Toast.LENGTH_SHORT).show()
@@ -195,7 +204,7 @@ class DetalleAlumno : AppCompatActivity() {
                 val fcmToken = document.getString("fcmToken") ?: return@addOnSuccessListener
 
                 val materiasTexto = materiasReprobadas.joinToString(", ") {
-                    "${it.nombre} (${it.calificacion.toInt()})"
+                    "${it.nombre} (${it.calificacion})"
                 }
 
                 val notification = mapOf(
